@@ -5,7 +5,7 @@ stages:
 
 variables:
   DOCKER_REGISTRY: docker.io
-  DOCKER_IMAGE: matkarajad/iti0302
+  DOCKER_IMAGE: rig14/matkarajad
 
 build:
   stage: build
