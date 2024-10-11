@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @Slf4j
 public class DefaultExceptionHandler {
     @ExceptionHandler(CampingRouteNotFoundException.class)
-    public ResponseEntity<CampingRouteNotFoundResponse> exception(CampingRouteNotFoundException e) {
+    public ResponseEntity<ExceptionResponse> exception(CampingRouteNotFoundException e) {
         log.error("Error occurred", e);
 
-        return new ResponseEntity<>(new CampingRouteNotFoundResponse(e.getMessage()), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(new ExceptionResponse(e.getMessage()), HttpStatus.NOT_FOUND);
     }
 }
