@@ -30,7 +30,7 @@ public class CampingRouteService {
 
     public ResponseEntity<CampingRouteDto> getCampingRoute(long id) {
         return repository.findById(id).map(value -> ResponseEntity.ok(mapper.toDto(value)))
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new CampingRouteNotFoundException("Matkarada ID-ga " + id + " ei eksisteeri.", id));
     }
 
     public ResponseEntity<Void> deleteCampingRoute(long id) {
