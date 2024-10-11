@@ -1,6 +1,7 @@
 package ee.taltech.iti03022024backend.service;
 
 import ee.taltech.iti03022024backend.dto.CampingRouteDto;
+import ee.taltech.iti03022024backend.exception.CampingRouteNotFoundException;
 import ee.taltech.iti03022024backend.mapping.CampingRouteMapper;
 import ee.taltech.iti03022024backend.repository.CampingRouteRepository;
 import lombok.RequiredArgsConstructor;
@@ -33,9 +34,9 @@ public class CampingRouteService {
     }
 
     public ResponseEntity<Void> deleteCampingRoute(long id) {
-        return repository.findById(id).map(value -> {
+        return repository.findById(id).map(_ -> {
             repository.deleteById(id);
             return ResponseEntity.noContent().<Void>build();
-        }).orElse(ResponseEntity.notFound().build());
+        }).orElseThrow(() -> new CampingRouteNotFoundException("Matkarada ID-ga " + id + " ei eksisteeri.", id));
     }
 }
