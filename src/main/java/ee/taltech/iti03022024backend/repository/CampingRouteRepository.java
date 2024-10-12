@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface CampingRouteRepository extends JpaRepository<CampingRouteEntity, Long> {
 
-    List<CampingRouteEntity> findByNameContainingIgnoreCaseAndLocationContainingIgnoreCase(String name, String location);
+    List<CampingRouteEntity> findByNameContainingIgnoreCaseOrLocationContainingIgnoreCase(String name, String location);
 }
