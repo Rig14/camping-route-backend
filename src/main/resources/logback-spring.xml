@@ -12,13 +12,7 @@
             </label>
             <message>
                 <pattern>
-                    {
-                    "level":"%level",
-                    "class":"%logger{36}",
-                    "thread":"%thread",
-                    "message": "%message",
-                    "requestId": "%X{X-Request-ID}"
-                    }
+                    [%thread] [%date] [%level] [%file:%line] - %msg%n
                 </pattern>
             </message>
         </format>
@@ -28,7 +22,7 @@
             <pattern>[%thread] [%date] [%level] [%file:%line] - %msg%n</pattern>
         </encoder>
     </appender>
-    <springProfile name="development">
+    <springProfile name="development | production">
         <root level="INFO">
             <appender-ref ref="CONSOLE"/>
         </root>
