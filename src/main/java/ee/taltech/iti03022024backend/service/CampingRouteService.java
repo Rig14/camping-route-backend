@@ -21,7 +21,7 @@ public class CampingRouteService {
     }
 
     public ResponseEntity<List<CampingRouteDto>> getCampingRoutes(Optional<String> name, Optional<String> location) {
-        return ResponseEntity.ok(mapper.toDtoList( repository.findByNameContainingIgnoreCaseOrLocationContainingIgnoreCase(
+        return ResponseEntity.ok(mapper.toDtoList(repository.findByNameContainingIgnoreCaseOrLocationContainingIgnoreCase(
             name.orElse(""),
             location.orElse("")
         )));
