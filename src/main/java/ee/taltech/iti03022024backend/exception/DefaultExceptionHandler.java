@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class DefaultExceptionHandler {
     @ExceptionHandler(CampingRouteNotFoundException.class)
     public ResponseEntity<ExceptionResponse> exception(CampingRouteNotFoundException e) {
-        log.error("Error occurred", e);
+        log.warn("Camping route error occurred", e);
 
         return new ResponseEntity<>(new ExceptionResponse(e.getMessage()), HttpStatus.NOT_FOUND);
     }
