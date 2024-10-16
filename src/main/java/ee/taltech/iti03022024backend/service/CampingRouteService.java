@@ -1,7 +1,6 @@
 package ee.taltech.iti03022024backend.service;
 
 import ee.taltech.iti03022024backend.dto.CampingRouteDto;
-import ee.taltech.iti03022024backend.exception.CampingRouteNotFoundException;
 import ee.taltech.iti03022024backend.mapping.CampingRouteMapper;
 import ee.taltech.iti03022024backend.repository.CampingRouteRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,8 +29,7 @@ public class CampingRouteService {
                 name.orElse(""),
                 location.orElse("")
         );
-
-        return ResponseEntity.ok(mapper.toDtoList(repository.findByNameContainingIgnoreCaseAndLocationContainingIgnoreCase(
+        return ResponseEntity.ok(mapper.toDtoList(repository.findByNameContainingIgnoreCaseOrLocationContainingIgnoreCase(
                 name.orElse(""),
                 location.orElse("")
         )));
