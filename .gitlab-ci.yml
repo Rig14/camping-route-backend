@@ -20,8 +20,8 @@ build:
 dockerize:
   stage: dockerize
   image: docker:latest
-  #rules:
-  #  - if: '$CI_COMMIT_BRANCH == "main"'
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
   services:
     - docker:dind
   variables:
@@ -40,8 +40,8 @@ dockerize:
 deploy:
   stage: deploy
   image: alpine:latest
-  #rules:
-  #  - if: '$CI_COMMIT_BRANCH == "main"'
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
   before_script:
     - apk add --no-cache openssh-client
     - eval $(ssh-agent -s)
