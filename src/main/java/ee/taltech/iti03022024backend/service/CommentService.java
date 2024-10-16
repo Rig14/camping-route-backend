@@ -25,7 +25,7 @@ public class CommentService {
 
     public ResponseEntity<CommentDto> createComment(CommentDto dto, long campingRouteId) {
         CampingRouteEntity campingRoute = campingRouteRepository.findById(campingRouteId)
-                .orElseThrow(EntityNotFoundException::new);
+            .orElseThrow(() -> new CampingRouteNotFoundException("Camping route with id of " + campingRouteId + " does not exist", campingRouteId));
 
         CommentEntity commentEntity = commentMapper.toEntity(dto);
         commentEntity.setCampingRoute(campingRoute);
