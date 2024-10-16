@@ -12,7 +12,6 @@ public class DefaultExceptionHandler {
     @ExceptionHandler(CampingRouteNotFoundException.class)
     public ResponseEntity<ExceptionResponse> exception(CampingRouteNotFoundException e) {
         log.warn("Camping route error occurred", e);
-
-        return new ResponseEntity<>(new ExceptionResponse(e.getMessage()), HttpStatus.NOT_FOUND);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ExceptionResponse(e.getMessage()));
     }
 }
