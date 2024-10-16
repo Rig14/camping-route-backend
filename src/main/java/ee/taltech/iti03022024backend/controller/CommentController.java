@@ -21,7 +21,7 @@ public class CommentController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<CommentDto>> getComment(@RequestParam("id") Long id) {
+    public ResponseEntity<List<CommentDto>> getByCommentsByCampingRoute(@RequestParam("id") Long id) {
         return service.getCommentsByCampingRoute(id);
     }
 }

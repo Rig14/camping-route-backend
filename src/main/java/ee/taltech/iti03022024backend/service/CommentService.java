@@ -27,7 +27,7 @@ public class CommentService {
         return ResponseEntity.ok(commentMapper.toDtoList(commentRepository.findAllByCampingRoute(getCampingRouteEntity(id))));
     }
 
-    public CampingRouteEntity getCampingRouteEntity(long id) {
+    private CampingRouteEntity getCampingRouteEntity(long id) {
         return campingRouteRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("CampingRoute not found"));
     }
