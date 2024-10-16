@@ -5,9 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class Iti03022024BackendApplication {
-
 	public static void main(String[] args) {
 		SpringApplication.run(Iti03022024BackendApplication.class, args);
 	}
-
 }

@@ -1,12 +1,10 @@
 package ee.taltech.iti03022024backend.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter @Setter
 @Entity
@@ -19,4 +17,7 @@ public class CampingRouteEntity {
     private String description;
     private String location;
     private String thumbnailUrl;
+
+    @OneToMany
+    private List<CommentEntity> comment; // one CampingRoute can have many comments
 }
