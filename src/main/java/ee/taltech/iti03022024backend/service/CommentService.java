@@ -2,6 +2,7 @@ package ee.taltech.iti03022024backend.service;
 
 import ee.taltech.iti03022024backend.dto.CommentDto;
 import ee.taltech.iti03022024backend.entity.CampingRouteEntity;
+import ee.taltech.iti03022024backend.entity.CommentEntity;
 import ee.taltech.iti03022024backend.mapping.CommentMapper;
 import ee.taltech.iti03022024backend.repository.CampingRouteRepository;
 import ee.taltech.iti03022024backend.repository.CommentRepository;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -19,8 +21,22 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final CampingRouteRepository campingRouteRepository;
 
-    public ResponseEntity<CommentDto> createComment(CommentDto dto) {
-        return ResponseEntity.ok(commentMapper.toDto(commentRepository.save(commentMapper.toEntity(dto))));
+    public ResponseEntity<CommentDto> createComment(CommentDto dto, long campingRouteId) {
+        CampingRouteEntity campingRoute = campingRouteRepository.findById(campingRouteId)
+                .orElseThrow(EntityNotFoundException::new);
+
+        CommentEntity commentEntity = commentMapper.toEntity(dto);
+        commentEntity.setCampingRoute(campingRoute);
+
+        List<CommentEntity> commentList = campingRoute.getComment();
+        if (commentList == null) {
+            commentList = new ArrayList<>(); // Initialize if null
+        }
+        commentList.add(commentEntity);
+
+        CommentEntity savedComment = commentRepository.save(commentEntity);
+        campingRouteRepository.save(campingRoute);
+        return ResponseEntity.ok(commentMapper.toDto(savedComment));
     }
 
     public ResponseEntity<List<CommentDto>> getCommentsByCampingRoute(Long id) {

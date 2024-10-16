@@ -8,6 +8,11 @@
 
     <!-- Create camping route table     -->
     <changeSet id="1728495688277-1" author="artur">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="camping_route"/>
+            </not>
+        </preConditions>
         <createTable tableName="camping_route">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_campingroute"/>
