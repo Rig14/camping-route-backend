@@ -18,6 +18,9 @@ public class CampingRouteEntity {
     private String location;
     private String thumbnailUrl;
 
+    @Lob // Large Object (LOB). JPA to handle the XML data appropriately.
+    private String gpx;
+
     @OneToMany
     private List<CommentEntity> comment; // one CampingRoute can have many comments
 }

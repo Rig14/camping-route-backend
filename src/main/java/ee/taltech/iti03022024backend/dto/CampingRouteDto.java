@@ -12,5 +12,6 @@ public class CampingRouteDto {
     private String description;
     private String location;
     private String thumbnailUrl;
+    private String gpx;
     private List<CommentDto> comments;
 }
