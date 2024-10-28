@@ -9,6 +9,9 @@ build/
 grafana
 postgres-data
 
+#data foilder files
+files
+
 ### STS ###
 .apt_generated
 .classpath
