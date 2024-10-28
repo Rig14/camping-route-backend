@@ -56,6 +56,7 @@ public class CampingRouteImagesService {
                     .map(Path::getFileName)
                     .map(Path::toString)
                     .toList();
+            log.info("Found {} image files for camping route with id {}", fileNames.size(), campingRouteId);
             var response = new CampingRouteImageNamesDto();
             response.setImageNames(fileNames);
             return ResponseEntity.ok(response);
@@ -71,7 +72,7 @@ public class CampingRouteImagesService {
         log.info("Storing file with name {}", file.getOriginalFilename());
 
         if (file.isEmpty()) {
-            throw new CampingRouteImageStorageException("Encountered empty file. Skipping...");
+            throw new CampingRouteImageStorageException("Encountered empty file.");
         }
 
         try {
@@ -102,7 +103,7 @@ public class CampingRouteImagesService {
         log.info("Getting file with name {} for camping route with id {}", imageName, id);
 
         // file path in the system
-        var fileDir = rootDir
+        var filePath = rootDir
                 .resolve(String.valueOf(id))
                 .resolve(imageName)
                 .normalize()
@@ -110,7 +111,7 @@ public class CampingRouteImagesService {
 
         try {
             // get the file as a "Resource" and send it back to client.
-            var resource = new UrlResource(fileDir.toUri());
+            var resource = new UrlResource(filePath.toUri());
             if (!resource.exists() || !resource.isReadable()) {
                 throw new CampingRouteImageStorageException("Could not read file: " + resource.getFilename());
             }
@@ -123,12 +124,26 @@ public class CampingRouteImagesService {
 
         } catch (MalformedURLException e) {
             throw new CampingRouteImageStorageException(
-                    "File with name " +
-                            imageName +
-                            " does not exist for post with id "
-                            + id,
-                    e
-            );
+                    "File with name " + imageName + " does not exist for post with id " + id, e);
+        }
+    }
+
+    public ResponseEntity<Void> deleteImage(long id, String imageName) {
+        log.info("Deleting image {} from camping route with id {}", imageName, id);
+
+        // file path in the system
+        var filePath = rootDir
+                .resolve(String.valueOf(id))
+                .resolve(imageName)
+                .normalize()
+                .toAbsolutePath();
+
+        try {
+            Files.delete(filePath);
+
+            return ResponseEntity.noContent().build();
+        } catch (IOException e) {
+            throw new CampingRouteImageStorageException("File with name " + imageName + " could not be deleted", e);
         }
     }
 }
