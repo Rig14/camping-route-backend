@@ -1,6 +1,7 @@
 package ee.taltech.iti03022024backend.service;
 
 import ee.taltech.iti03022024backend.dto.CampingRouteImageNamesDto;
+import ee.taltech.iti03022024backend.exception.CampingRouteImageNotFound;
 import ee.taltech.iti03022024backend.exception.CampingRouteImageStorageException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,8 +45,7 @@ public class CampingRouteImagesService {
                 .toAbsolutePath();
 
         if (Files.notExists(dirName)) {
-            log.info("No images where found for camping route with id {}", campingRouteId);
-            return ResponseEntity.notFound().build();
+            throw new CampingRouteImageNotFound("Could not find images for camping route");
         }
 
         // find all files in the dir. get their names and construct dto with list of these names
@@ -60,7 +60,7 @@ public class CampingRouteImagesService {
             response.setImageNames(fileNames);
             return ResponseEntity.ok(response);
         } catch (IOException e) {
-            throw new CampingRouteImageStorageException(
+            throw new CampingRouteImageNotFound(
                     "Could not find files for camping route with id " + campingRouteId,
                     e
             );
@@ -112,7 +112,7 @@ public class CampingRouteImagesService {
             // get the file as a "Resource" and send it back to client.
             var resource = new UrlResource(filePath.toUri());
             if (!resource.exists() || !resource.isReadable()) {
-                throw new CampingRouteImageStorageException("Could not read file: " + resource.getFilename());
+                throw new CampingRouteImageNotFound("Could not find and read file " + resource.getFilename());
             }
             return ResponseEntity
                     .ok()
@@ -120,7 +120,7 @@ public class CampingRouteImagesService {
 
         } catch (MalformedURLException e) {
             throw new CampingRouteImageStorageException(
-                    "File with name " + imageName + " does not exist for post with id " + id, e);
+                    "Invalid file path", e);
         }
     }
 
@@ -135,6 +135,10 @@ public class CampingRouteImagesService {
                 .toAbsolutePath();
 
         try {
+            if (Files.notExists(filePath)) {
+                throw new CampingRouteImageNotFound("File " + imageName + "does not exist.");
+            }
+
             Files.delete(filePath);
 
             return ResponseEntity.noContent().build();
