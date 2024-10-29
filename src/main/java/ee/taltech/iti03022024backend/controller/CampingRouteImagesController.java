@@ -39,4 +39,9 @@ public class CampingRouteImagesController {
     public ResponseEntity<Void> deleteImage(@PathVariable long id, @PathVariable String imageName) {
         return campingRouteImagesService.deleteImage(id, imageName);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteAllImages(@PathVariable long id) {
+        return campingRouteImagesService.deleteAllImage(id);
+    }
 }

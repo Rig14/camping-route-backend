@@ -12,10 +12,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.UUID;
 
 @Service
@@ -144,6 +146,32 @@ public class CampingRouteImagesService {
             return ResponseEntity.noContent().build();
         } catch (IOException e) {
             throw new CampingRouteImageStorageException("File with name " + imageName + " could not be deleted", e);
+        }
+    }
+
+    public ResponseEntity<Void> deleteAllImage(long id) {
+        log.info("Deleting all images for camping route with id {}", id);
+
+        var dirPath = rootDir
+                .resolve(String.valueOf(id))
+                .normalize()
+                .toAbsolutePath();
+
+        try {
+            if (Files.notExists(dirPath)) {
+                throw new CampingRouteImageNotFound("Images could not be found for camping route with id " + id);
+            }
+
+            try (var stream = Files.walk(dirPath)) {
+                stream.sorted(Comparator.reverseOrder())
+                        .map(Path::toFile)
+                        .forEach(File::delete);
+            }
+
+            return ResponseEntity.noContent().build();
+        } catch (IOException e) {
+            throw new CampingRouteImageStorageException(
+                    "Could not delete directory containing images for camping route with id " + id);
         }
     }
 }
