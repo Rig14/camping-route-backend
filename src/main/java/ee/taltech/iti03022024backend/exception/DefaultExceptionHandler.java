@@ -30,7 +30,7 @@ public class DefaultExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     public void exception(RuntimeException e) {
-        log.error("Camping route image storage exception occurred.", e);
+        log.error("An exception occurred.", e);
     }
 
 }
