@@ -18,6 +18,7 @@ services:
       - 8080:8080
     volumes:
       - /home/ubuntu/web-project/application.properties:/app/application.properties
+      - /home/ubuntu/web-project/files:/app/files
   grafana:
     image: grafana/grafana
     container_name: grafana

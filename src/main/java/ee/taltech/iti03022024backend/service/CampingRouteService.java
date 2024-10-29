@@ -40,7 +40,7 @@ public class CampingRouteService {
         log.info("Fetching camping route with id {}", id);
 
         return repository.findById(id).map(value -> ResponseEntity.ok(mapper.toDto(value)))
-                .orElseThrow(() -> new CampingRouteNotFoundException("Camping route with id of " + id + " does not exist", id));
+                .orElseThrow(() -> new CampingRouteNotFoundException("Camping route with id of " + id + " does not exist"));
     }
 
     public ResponseEntity<Void> deleteCampingRoute(long id) {
@@ -49,6 +49,6 @@ public class CampingRouteService {
         return repository.findById(id).map(_ -> {
             repository.deleteById(id);
             return ResponseEntity.noContent().<Void>build();
-        }).orElseThrow(() -> new CampingRouteNotFoundException("Camping route with id of " + id + " does not exist", id));
+        }).orElseThrow(() -> new CampingRouteNotFoundException("Camping route with id of " + id + " does not exist"));
     }
 }

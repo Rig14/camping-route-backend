@@ -25,7 +25,7 @@ public class CommentService {
 
     public ResponseEntity<CommentDto> createComment(CommentDto dto, long campingRouteId) {
         CampingRouteEntity campingRoute = campingRouteRepository.findById(campingRouteId)
-            .orElseThrow(() -> new CampingRouteNotFoundException("Camping route with id of " + campingRouteId + " does not exist", campingRouteId));
+                .orElseThrow(() -> new CampingRouteNotFoundException("Camping route with id of " + campingRouteId + " does not exist"));
 
         CommentEntity commentEntity = commentMapper.toEntity(dto);
         commentEntity.setCampingRoute(campingRoute);
@@ -53,6 +53,6 @@ public class CommentService {
         log.info("Fetching camping route with id of {}", id);
 
         return campingRouteRepository.findById(id)
-                .orElseThrow(() -> new CampingRouteNotFoundException("Camping route with id of " + id + " does not exist", id));
+                .orElseThrow(() -> new CampingRouteNotFoundException("Camping route with id of " + id + " does not exist"));
     }
 }
