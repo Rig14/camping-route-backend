@@ -20,7 +20,7 @@ public class DefaultExceptionHandler {
 
     @ExceptionHandler({EmailAlreadyExistsException.class, UsernameAlreadyExistsException.class})
     public ResponseEntity<ExceptionResponse> handleAlreadyExistsException(RuntimeException e) {
-        log.warn("Resource already exists: {}", e.getMessage());
+        log.warn("Resouor all new exceptions.rce already exists: {}", e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body(new ExceptionResponse(e.getMessage()));
@@ -33,4 +33,23 @@ public class DefaultExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ExceptionResponse(e.getMessage()));
     }
+
+    @ExceptionHandler(CampingRouteImageStorageException.class)
+    public ResponseEntity<ExceptionResponse> exception(CampingRouteImageStorageException e) {
+        log.error("Camping route image storage exception occurred", e);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ExceptionResponse(e.getMessage()));
+    }
+
+    @ExceptionHandler(CampingRouteImageNotFound.class)
+    public ResponseEntity<ExceptionResponse> exception(CampingRouteImageNotFound e) {
+        log.error("Camping route image not found", e);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ExceptionResponse(e.getMessage()));
+    }
+
+
+    @ExceptionHandler(RuntimeException.class)
+    public void exception(RuntimeException e) {
+        log.error("An exception occurred.", e);
+    }
+
 }
