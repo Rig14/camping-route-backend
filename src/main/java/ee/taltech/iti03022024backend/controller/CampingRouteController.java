@@ -28,6 +28,11 @@ public class CampingRouteController {
         return service.getCampingRoutes(name, location, username);
     }
 
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<CampingRouteDto>> getCampingRoutesByUserId(@PathVariable long userId) {
+        return service.getCampingRoutesByUserId(userId);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<CampingRouteDto> getCampingRoute(@PathVariable long id) {
         return service.getCampingRoute(id);

@@ -48,7 +48,13 @@ public class CommentService {
     public ResponseEntity<List<CommentDto>> getCommentsByCampingRoute(Long id) {
         log.info("Fetching comments by camping route id {}", id);
 
-        return ResponseEntity.ok(commentMapper.toDtoList(commentRepository.findAllByCampingRoute(getCampingRouteEntity(id))));
+        return ResponseEntity.ok(commentMapper.toDtoList(commentRepository.findByCampingRoute(getCampingRouteEntity(id))));
+    }
+
+    public ResponseEntity<List<CommentDto>> getCommentsByUserId(long id) {
+        log.info("Fetching comments by user id {}", id);
+
+        return ResponseEntity.ok(commentMapper.toDtoList(commentRepository.findByUser_Id(id)));
     }
 
     private CampingRouteEntity getCampingRouteEntity(long id) {

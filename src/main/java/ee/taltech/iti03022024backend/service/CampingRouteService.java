@@ -40,6 +40,11 @@ public class CampingRouteService {
         )));
     }
 
+    public ResponseEntity<List<CampingRouteDto>> getCampingRoutesByUserId(long id) {
+        log.info("Fetching all camping routes with user id: {}", id);
+        return ResponseEntity.ok(mapper.toDtoList(repository.findByUser_Id(id)));
+    }
+
     public ResponseEntity<CampingRouteDto> getCampingRoute(long id) {
         log.info("Fetching camping route with id {}", id);
 
