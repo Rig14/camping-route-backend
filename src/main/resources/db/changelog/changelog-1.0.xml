@@ -6,7 +6,7 @@
                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
 
     <changeSet id="Matkarajad" author="31">
-        <createTable tableName="User">
+        <createTable tableName="user">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" unique="true" nullable="false"/>
             </column>
@@ -21,7 +21,7 @@
             </column>
         </createTable>
 
-        <createTable tableName="CampingRoute">
+        <createTable tableName="camping_route">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" unique="true" nullable="false"/>
             </column>
@@ -34,11 +34,11 @@
             <column name="user_id" type="bigint">
                 <constraints nullable="false"
                            foreignKeyName="fk_camping_route_user"
-                           references="User(id)"/>
+                           references="user(id)"/>
             </column>
         </createTable>
 
-        <createTable tableName="Comment">
+        <createTable tableName="comment">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" unique="true" nullable="false"/>
             </column>
@@ -48,51 +48,51 @@
             <column name="user_id" type="bigint">
                 <constraints nullable="false"
                            foreignKeyName="fk_comment_user"
-                           references="User(id)"/>
+                           references="user(id)"/>
             </column>
             <column name="camping_route_id" type="bigint">
                 <constraints nullable="false"
                            foreignKeyName="fk_comment_camping_route"
-                           references="CampingRoute(id)"/>
+                           references="camping_route(id)"/>
             </column>
         </createTable>
 
-        <createTable tableName="User_CampingRoutes">
+        <createTable tableName="user_camping_routes">
             <column name="user_entity_id" type="bigint">
                 <constraints nullable="false"
                            foreignKeyName="fk_user_camping_routes_user"
-                           references="User(id)"/>
+                           references="user(id)"/>
             </column>
             <column name="camping_routes_id" type="bigint">
                 <constraints nullable="false"
                            foreignKeyName="fk_user_camping_routes_route"
-                           references="CampingRoute(id)"/>
+                           references="camping_route(id)"/>
             </column>
         </createTable>
 
-        <createTable tableName="User_Comments">
+        <createTable tableName="user_comments">
             <column name="user_entity_id" type="bigint">
                 <constraints nullable="false"
                            foreignKeyName="fk_user_comments_user"
-                           references="User(id)"/>
+                           references="user(id)"/>
             </column>
             <column name="comments_id" type="bigint">
                 <constraints nullable="false"
                            foreignKeyName="fk_user_comments_comment"
-                           references="Comment(id)"/>
+                           references="comment(id)"/>
             </column>
         </createTable>
 
-        <createTable tableName="CampingRoute_Comment">
+        <createTable tableName="camping_route_comment">
             <column name="camping_route_entity_id" type="bigint">
                 <constraints nullable="false"
                            foreignKeyName="fk_camping_route_comments_route"
-                           references="CampingRoute(id)"/>
+                           references="camping_route(id)"/>
             </column>
             <column name="comment_id" type="bigint">
                 <constraints nullable="false"
                            foreignKeyName="fk_camping_route_comments_comment"
-                           references="Comment(id)"/>
+                           references="comment(id)"/>
             </column>
         </createTable>
     </changeSet>
