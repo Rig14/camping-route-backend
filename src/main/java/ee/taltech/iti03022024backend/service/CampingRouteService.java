@@ -27,14 +27,16 @@ public class CampingRouteService {
         return ResponseEntity.ok(mapper.toDto(repository.save(mapper.toEntity(dto))));
     }
 
-    public ResponseEntity<List<CampingRouteDto>> getCampingRoutes(Optional<String> name, Optional<String> location) {
-        log.info("Fetching all camping routes with filters for name: {} and location: {}",
+    public ResponseEntity<List<CampingRouteDto>> getCampingRoutes(Optional<String> name, Optional<String> location, Optional<String> username) {
+        log.info("Fetching all camping routes with filters for {} {} {}",
                 name.orElse(""),
-                location.orElse("")
+                location.orElse(""),
+                username.orElse("")
         );
-        return ResponseEntity.ok(mapper.toDtoList(repository.findByNameContainingIgnoreCaseOrLocationContainingIgnoreCase(
+        return ResponseEntity.ok(mapper.toDtoList(repository.findByNameContainingIgnoreCaseOrLocationContainingIgnoreCaseOrUser_UsernameContainingIgnoreCase(
                 name.orElse(""),
-                location.orElse("")
+                location.orElse(""),
+                username.orElse("")
         )));
     }
 
