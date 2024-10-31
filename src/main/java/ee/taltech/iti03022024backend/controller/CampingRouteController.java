@@ -21,9 +21,16 @@ public class CampingRouteController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<CampingRouteDto>> getCampingRoutes(@RequestParam("name") Optional<String> name,
-                                                   @RequestParam("location") Optional<String> location) {
-        return service.getCampingRoutes(name, location);
+    public ResponseEntity<List<CampingRouteDto>> getCampingRoutes(
+            @RequestParam("name") Optional<String> name,
+            @RequestParam("location") Optional<String> location,
+            @RequestParam("username") Optional<String> username) {
+        return service.getCampingRoutes(name, location, username);
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<CampingRouteDto>> getCampingRoutesByUserId(@PathVariable long userId) {
+        return service.getCampingRoutesByUserId(userId);
     }
 
     @GetMapping("/{id}")

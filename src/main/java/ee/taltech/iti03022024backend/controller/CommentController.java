@@ -24,4 +24,9 @@ public class CommentController {
     public ResponseEntity<List<CommentDto>> getCommentsByCampingRoute(@PathVariable long campingRouteId) {
         return service.getCommentsByCampingRoute(campingRouteId);
     }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<CommentDto>> getCommentsByUserId(@PathVariable long userId) {
+        return service.getCommentsByUserId(userId);
+    }
 }

@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class CommentService {
     private final CommentMapper commentMapper;
     private final CommentRepository commentRepository;
@@ -46,7 +48,13 @@ public class CommentService {
     public ResponseEntity<List<CommentDto>> getCommentsByCampingRoute(Long id) {
         log.info("Fetching comments by camping route id {}", id);
 
-        return ResponseEntity.ok(commentMapper.toDtoList(commentRepository.findAllByCampingRoute(getCampingRouteEntity(id))));
+        return ResponseEntity.ok(commentMapper.toDtoList(commentRepository.findByCampingRoute(getCampingRouteEntity(id))));
+    }
+
+    public ResponseEntity<List<CommentDto>> getCommentsByUserId(long id) {
+        log.info("Fetching comments by user id {}", id);
+
+        return ResponseEntity.ok(commentMapper.toDtoList(commentRepository.findByUser_Id(id)));
     }
 
     private CampingRouteEntity getCampingRouteEntity(long id) {

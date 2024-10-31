@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +16,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class CampingRouteService {
     private final CampingRouteRepository repository;
     private final CampingRouteMapper mapper;
@@ -25,15 +27,22 @@ public class CampingRouteService {
         return ResponseEntity.ok(mapper.toDto(repository.save(mapper.toEntity(dto))));
     }
 
-    public ResponseEntity<List<CampingRouteDto>> getCampingRoutes(Optional<String> name, Optional<String> location) {
-        log.info("Fetching all camping routes with filters for name: {} and location: {}",
+    public ResponseEntity<List<CampingRouteDto>> getCampingRoutes(Optional<String> name, Optional<String> location, Optional<String> username) {
+        log.info("Fetching all camping routes with filters for {} {} {}",
                 name.orElse(""),
-                location.orElse("")
+                location.orElse(""),
+                username.orElse("")
         );
-        return ResponseEntity.ok(mapper.toDtoList(repository.findByNameContainingIgnoreCaseOrLocationContainingIgnoreCase(
+        return ResponseEntity.ok(mapper.toDtoList(repository.findByNameContainingIgnoreCaseOrLocationContainingIgnoreCaseOrUser_UsernameContainingIgnoreCase(
                 name.orElse(""),
-                location.orElse("")
+                location.orElse(""),
+                username.orElse("")
         )));
+    }
+
+    public ResponseEntity<List<CampingRouteDto>> getCampingRoutesByUserId(long id) {
+        log.info("Fetching all camping routes with user id: {}", id);
+        return ResponseEntity.ok(mapper.toDtoList(repository.findByUser_Id(id)));
     }
 
     public ResponseEntity<CampingRouteDto> getCampingRoute(long id) {
@@ -46,7 +55,7 @@ public class CampingRouteService {
     public ResponseEntity<Void> deleteCampingRoute(long id) {
         log.info("Deleting camping route with id {}", id);
 
-        return repository.findById(id).map(_ -> {
+        return repository.findById(id).map(route -> {
             repository.deleteById(id);
             return ResponseEntity.noContent().<Void>build();
         }).orElseThrow(() -> new CampingRouteNotFoundException("Camping route with id of " + id + " does not exist"));

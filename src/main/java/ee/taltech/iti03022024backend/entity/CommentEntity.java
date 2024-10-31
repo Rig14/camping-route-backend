@@ -14,5 +14,8 @@ public class CommentEntity {
     private String content;
 
     @ManyToOne
+    private UserEntity user;
+
+    @ManyToOne
     private CampingRouteEntity campingRoute;
 }
