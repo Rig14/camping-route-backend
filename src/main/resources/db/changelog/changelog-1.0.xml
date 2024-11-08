@@ -6,7 +6,7 @@
                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
 
     <changeSet id="Matkarajad" author="31">
-        <createTable tableName="user">
+        <createTable tableName="user_data">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" unique="true" nullable="false"/>
             </column>
@@ -34,7 +34,7 @@
             <column name="user_id" type="bigint">
                 <constraints nullable="false"
                            foreignKeyName="fk_camping_route_user"
-                           references="user(id)"/>
+                           references="user_data(id)"/>
             </column>
         </createTable>
 
@@ -48,7 +48,7 @@
             <column name="user_id" type="bigint">
                 <constraints nullable="false"
                            foreignKeyName="fk_comment_user"
-                           references="user(id)"/>
+                           references="user_data(id)"/>
             </column>
             <column name="camping_route_id" type="bigint">
                 <constraints nullable="false"
@@ -61,7 +61,7 @@
             <column name="user_entity_id" type="bigint">
                 <constraints nullable="false"
                            foreignKeyName="fk_user_camping_routes_user"
-                           references="user(id)"/>
+                           references="user_data(id)"/>
             </column>
             <column name="camping_routes_id" type="bigint">
                 <constraints nullable="false"
@@ -74,7 +74,7 @@
             <column name="user_entity_id" type="bigint">
                 <constraints nullable="false"
                            foreignKeyName="fk_user_comments_user"
-                           references="user(id)"/>
+                           references="user_data(id)"/>
             </column>
             <column name="comments_id" type="bigint">
                 <constraints nullable="false"

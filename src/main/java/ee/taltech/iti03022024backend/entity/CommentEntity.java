@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter @Setter
 @Entity
-@Table(name = "Comment")
+@Table(name = "comment")
 public class CommentEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
