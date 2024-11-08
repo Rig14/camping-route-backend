@@ -1,11 +1,10 @@
 package ee.taltech.iti03022024backend.dto;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Data
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class VerificationDto {
-    private String username;
-    private String password;
+    private final String token;
 }

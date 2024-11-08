@@ -6,12 +6,17 @@ import ee.taltech.iti03022024backend.entity.UserEntity;
 import ee.taltech.iti03022024backend.exception.*;
 import ee.taltech.iti03022024backend.mapping.UserMapper;
 import ee.taltech.iti03022024backend.repository.UserRepository;
+import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.crypto.SecretKey;
+import java.util.Date;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -21,6 +26,7 @@ public class UserService {
     private final UserMapper mapper;
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
+    private final SecretKey jwtKey;
 
     private boolean isPasswordValid(String password) {
         // Password must be at least 8 characters long and contains:
@@ -32,7 +38,20 @@ public class UserService {
         return password != null && password.matches(pattern);
     }
 
-    public ResponseEntity<UserDto> createUser(UserDto dto) {
+    private String generateToken(UserEntity user) {
+        return Jwts.builder()
+                .subject(user.getUsername())
+                .claims(Map.of(
+                        // claims can be added if needed
+                        "userId", user.getId()
+                ))
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
+                .signWith(jwtKey)
+                .compact();
+    }
+
+    public ResponseEntity<VerificationDto> createUser(UserDto dto) {
         if (repository.existsByUsername(dto.getUsername())) {
             throw new UsernameAlreadyExistsException("Username is already taken");
         }
@@ -44,23 +63,26 @@ public class UserService {
         }
         log.info("Creating new user with name {}", dto.getUsername());
 
-        UserEntity entity = mapper.toEntity(dto);
-        entity.setPassword(passwordEncoder.encode(dto.getPassword()));
-        return ResponseEntity.ok(mapper.toDto(repository.save(entity)));
+        UserEntity user = mapper.toEntity(dto);
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        String token = generateToken(user);
+        repository.save(user);
+        return ResponseEntity.ok(new VerificationDto(token));
     }
 
-    public ResponseEntity<UserDto> verifyUser(VerificationDto loginRequest) {
-        log.info("Attempting login for user: {}", loginRequest.getUsername());
+    public ResponseEntity<VerificationDto> verifyUser(UserDto dto) {
+        log.info("Attempting login for user: {}", dto.getUsername());
 
-        UserEntity user = repository.findByUsername(loginRequest.getUsername())
+        UserEntity user = repository.findByUsername(dto.getUsername())
                 .orElseThrow(() -> new InvalidCredentialsException("Invalid username or password"));
 
-        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
             throw new InvalidCredentialsException("Invalid username or password");
         }
 
-        log.info("Successful login for user: {}", loginRequest.getUsername());
-        return ResponseEntity.ok(mapper.toDto(user));
+        log.info("Successful login for user: {}", dto.getUsername());
+        String token = generateToken(user);
+        return ResponseEntity.ok(new VerificationDto(token));
     }
 
     public ResponseEntity<UserDto> getUser(long id) {

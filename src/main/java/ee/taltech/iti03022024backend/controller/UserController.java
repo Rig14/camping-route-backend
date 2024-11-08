@@ -14,12 +14,12 @@ public class UserController {
     private final UserService service;
 
     @PostMapping()
-    public ResponseEntity<UserDto> createUser(@RequestBody UserDto dto) {
+    public ResponseEntity<VerificationDto> createUser(@RequestBody UserDto dto) {
         return service.createUser(dto);
     }
 
     @GetMapping("/verify")
-    public ResponseEntity<UserDto> verifyUser(@RequestBody VerificationDto dto) {
+    public ResponseEntity<VerificationDto> verifyUser(@RequestBody UserDto dto) {
         return service.verifyUser(dto);
     }
 
