@@ -1,7 +1,9 @@
 package ee.taltech.iti03022024backend.service;
 
 import ee.taltech.iti03022024backend.dto.CampingRouteDto;
+import ee.taltech.iti03022024backend.entity.CampingRouteEntity;
 import ee.taltech.iti03022024backend.exception.CampingRouteNotFoundException;
+import ee.taltech.iti03022024backend.exception.NotPermittedException;
 import ee.taltech.iti03022024backend.mapping.CampingRouteMapper;
 import ee.taltech.iti03022024backend.repository.CampingRouteRepository;
 import lombok.RequiredArgsConstructor;
@@ -52,12 +54,17 @@ public class CampingRouteService {
                 .orElseThrow(() -> new CampingRouteNotFoundException("Camping route with id of " + id + " does not exist"));
     }
 
-    public ResponseEntity<Void> deleteCampingRoute(long id) {
+    public ResponseEntity<Void> deleteCampingRoute(String principal, long id) {
+        CampingRouteEntity route = repository.findById(id)
+                .orElseThrow(() -> new CampingRouteNotFoundException("Camping route with ID " + id + " does not exist"));
+
+        if (!route.getUser().getUsername().equals(principal)) {
+            throw new NotPermittedException("You are not permitted to delete this camping route.");
+        }
+
         log.info("Deleting camping route with id {}", id);
 
-        return repository.findById(id).map(route -> {
-            repository.deleteById(id);
-            return ResponseEntity.noContent().<Void>build();
-        }).orElseThrow(() -> new CampingRouteNotFoundException("Camping route with id of " + id + " does not exist"));
+        repository.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -11,21 +11,21 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/camping_routes/comments")
+@RequestMapping("api")
 public class CommentController {
     private final CommentService service;
 
-    @PostMapping("/{campingRouteId}")
+    @PostMapping("/camping_routes/comments/{campingRouteId}")
     public ResponseEntity<CommentDto> createComment(@RequestBody CommentDto dto, @PathVariable long campingRouteId) {
         return service.createComment(dto, campingRouteId);
     }
 
-    @GetMapping("/{campingRouteId}")
+    @GetMapping("/public/camping_routes/comments/{campingRouteId}")
     public ResponseEntity<List<CommentDto>> getCommentsByCampingRoute(@PathVariable long campingRouteId) {
         return service.getCommentsByCampingRoute(campingRouteId);
     }
 
-    @GetMapping("/user/{userId}")
+    @GetMapping("/public/camping_routes/comments/user/{userId}")
     public ResponseEntity<List<CommentDto>> getCommentsByUserId(@PathVariable long userId) {
         return service.getCommentsByUserId(userId);
     }

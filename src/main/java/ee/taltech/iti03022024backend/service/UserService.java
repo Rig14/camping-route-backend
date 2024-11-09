@@ -92,11 +92,17 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
     }
 
-    public ResponseEntity<Void> deleteUser(long id) {
-        log.info("Deleting user with id {}", id);
-        return repository.findById(id).map(route -> {
-            repository.deleteById(id);
-            return ResponseEntity.noContent().<Void>build();
-        }).orElseThrow(() -> new UserNotFoundException("User with id of " + id + " does not exist"));
+    public ResponseEntity<Void> deleteUser(String principal, long id) {
+        UserEntity user = repository.findByUsername(principal)
+                .orElseThrow(() -> new UserNotFoundException("User not found with username: " + principal));
+
+        if (user.getId() != id) {
+            throw new NotPermittedException("You are not permitted to delete this user.");
+        }
+
+        log.info("Deleting user with ID {}", id);
+
+        repository.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }
