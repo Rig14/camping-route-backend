@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.security.Principal;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -19,10 +21,11 @@ public class CampingRouteImagesController {
 
     @PostMapping("/camping_routes/images/{id}")
     public ResponseEntity<Void> addImagesToCampingRoute(
+            Principal principal,
             @RequestParam("files") MultipartFile[] files,
             @PathVariable long id
     ) {
-        return campingRouteImagesService.storeImages(files, id);
+        return campingRouteImagesService.storeImages(principal.getName(), files, id);
     }
 
     @GetMapping("/public/camping_routes/images/{id}")
@@ -36,12 +39,15 @@ public class CampingRouteImagesController {
     }
 
     @DeleteMapping("/camping_routes/images/{id}/{imageName}")
-    public ResponseEntity<Void> deleteImage(@PathVariable long id, @PathVariable String imageName) {
-        return campingRouteImagesService.deleteImage(id, imageName);
+    public ResponseEntity<Void> deleteImage(
+            Principal principal,
+            @PathVariable long id,
+            @PathVariable String imageName) {
+        return campingRouteImagesService.deleteImage(principal.getName(), id, imageName);
     }
 
     @DeleteMapping("/camping_routes/images/{id}")
-    public ResponseEntity<Void> deleteAllImages(@PathVariable long id) {
-        return campingRouteImagesService.deleteAllImage(id);
+    public ResponseEntity<Void> deleteAllImages(Principal principal, @PathVariable long id) {
+        return campingRouteImagesService.deleteAllImage(principal.getName(), id);
     }
 }
