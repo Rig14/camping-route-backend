@@ -7,30 +7,32 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/user")
+@RequestMapping("api")
 public class UserController {
     private final UserService service;
 
-    @PostMapping()
-    public ResponseEntity<UserDto> createUser(@RequestBody UserDto dto) {
+    @PostMapping("/public/user")
+    public ResponseEntity<VerificationDto> createUser(@RequestBody UserDto dto) {
         return service.createUser(dto);
     }
 
-    @GetMapping("/verify")
-    public ResponseEntity<UserDto> verifyUser(@RequestBody VerificationDto dto) {
+    @GetMapping("/public/user/verify")
+    public ResponseEntity<VerificationDto> verifyUser(@RequestBody UserDto dto) {
         return service.verifyUser(dto);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/public/user/{id}")
     public ResponseEntity<UserDto> getUser(@PathVariable long id) {
         return service.getUser(id);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable long id) {
-        return service.deleteUser(id);
+    @DeleteMapping("/user/{id}")
+    public ResponseEntity<Void> deleteUser(Principal principal, @PathVariable long id) {
+        return service.deleteUser(principal.getName(), id);
     }
 
 }

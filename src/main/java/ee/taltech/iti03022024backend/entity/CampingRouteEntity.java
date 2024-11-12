@@ -1,7 +1,6 @@
 package ee.taltech.iti03022024backend.entity;
 
 import jakarta.persistence.*;
-import jdk.jfr.MemoryAddress;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,7 +8,7 @@ import java.util.List;
 
 @Getter @Setter
 @Entity
-@Table(name = "CampingRoute")
+@Table(name = "camping_route")
 public class CampingRouteEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

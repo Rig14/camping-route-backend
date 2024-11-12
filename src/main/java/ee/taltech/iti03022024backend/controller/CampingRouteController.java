@@ -6,21 +6,22 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/camping_routes")
+@RequestMapping("api")
 public class CampingRouteController {
     private final CampingRouteService service;
 
-    @PostMapping()
-    public ResponseEntity<CampingRouteDto> createCampingRoute(@RequestBody CampingRouteDto dto) {
+    @PostMapping("/camping_routes")
+    public ResponseEntity<CampingRouteDto> createCampingRoute( @RequestBody CampingRouteDto dto) {
         return service.createCampingRoute(dto);
     }
 
-    @GetMapping()
+    @GetMapping("/public/camping_routes")
     public ResponseEntity<List<CampingRouteDto>> getCampingRoutes(
             @RequestParam("name") Optional<String> name,
             @RequestParam("location") Optional<String> location,
@@ -28,18 +29,18 @@ public class CampingRouteController {
         return service.getCampingRoutes(name, location, username);
     }
 
-    @GetMapping("/user/{userId}")
+    @GetMapping("/public/camping_routes/user/{userId}")
     public ResponseEntity<List<CampingRouteDto>> getCampingRoutesByUserId(@PathVariable long userId) {
         return service.getCampingRoutesByUserId(userId);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/public/camping_routes/{id}")
     public ResponseEntity<CampingRouteDto> getCampingRoute(@PathVariable long id) {
         return service.getCampingRoute(id);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCampingRoute(@PathVariable long id) {
-        return service.deleteCampingRoute(id);
+    @DeleteMapping("/camping_routes/{id}")
+    public ResponseEntity<Void> deleteCampingRoute(Principal principal, @PathVariable long id) {
+        return service.deleteCampingRoute(principal.getName(), id);
     }
 }

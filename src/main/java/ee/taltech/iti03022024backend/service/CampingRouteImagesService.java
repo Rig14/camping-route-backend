@@ -1,8 +1,12 @@
 package ee.taltech.iti03022024backend.service;
 
 import ee.taltech.iti03022024backend.dto.CampingRouteImageNamesDto;
+import ee.taltech.iti03022024backend.entity.CampingRouteEntity;
 import ee.taltech.iti03022024backend.exception.CampingRouteImageNotFound;
 import ee.taltech.iti03022024backend.exception.CampingRouteImageStorageException;
+import ee.taltech.iti03022024backend.exception.CampingRouteNotFoundException;
+import ee.taltech.iti03022024backend.exception.NotPermittedException;
+import ee.taltech.iti03022024backend.repository.CampingRouteRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
@@ -17,6 +21,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.Principal;
 import java.util.Comparator;
 import java.util.UUID;
 
@@ -25,8 +30,21 @@ import java.util.UUID;
 @Slf4j
 public class CampingRouteImagesService {
     private final Path rootDir = Path.of("files").resolve("camping_route_images");
+    private final CampingRouteRepository repository;
 
-    public ResponseEntity<Void> storeImages(MultipartFile[] files, long campingRouteId) {
+    private void validateUser(String principal, long campingRouteId) {
+        CampingRouteEntity route = repository.findById(campingRouteId)
+                .orElseThrow(() -> new CampingRouteNotFoundException("Camping route with id of "
+                        + campingRouteId + " does not exist"));
+
+        if (!route.getUser().getUsername().equals(principal)) {
+            throw new NotPermittedException("You are not permitted to delete this camping route.");
+        }
+    }
+
+    public ResponseEntity<Void> storeImages(String principal, MultipartFile[] files, long campingRouteId) {
+        validateUser(principal, campingRouteId);
+
         log.info("Storing images for camping route with id {}. image count: {}",
                 campingRouteId,
                 files.length
@@ -126,12 +144,14 @@ public class CampingRouteImagesService {
         }
     }
 
-    public ResponseEntity<Void> deleteImage(long id, String imageName) {
-        log.info("Deleting image {} from camping route with id {}", imageName, id);
+    public ResponseEntity<Void> deleteImage(String principal, long campingRouteId, String imageName) {
+        validateUser(principal, campingRouteId);
+
+        log.info("Deleting image {} from camping route with id {}", imageName, campingRouteId);
 
         // file path in the system
         var filePath = rootDir
-                .resolve(String.valueOf(id))
+                .resolve(String.valueOf(campingRouteId))
                 .resolve(imageName)
                 .normalize()
                 .toAbsolutePath();
@@ -149,17 +169,19 @@ public class CampingRouteImagesService {
         }
     }
 
-    public ResponseEntity<Void> deleteAllImage(long id) {
-        log.info("Deleting all images for camping route with id {}", id);
+    public ResponseEntity<Void> deleteAllImage(String principal, long campingRouteId) {
+        validateUser(principal, campingRouteId);
+
+        log.info("Deleting all images for camping route with id {}", campingRouteId);
 
         var dirPath = rootDir
-                .resolve(String.valueOf(id))
+                .resolve(String.valueOf(campingRouteId))
                 .normalize()
                 .toAbsolutePath();
 
         try {
             if (Files.notExists(dirPath)) {
-                throw new CampingRouteImageNotFound("Images could not be found for camping route with id " + id);
+                throw new CampingRouteImageNotFound("Images could not be found for camping route with id " + campingRouteId);
             }
 
             try (var stream = Files.walk(dirPath)) {
@@ -171,7 +193,7 @@ public class CampingRouteImagesService {
             return ResponseEntity.noContent().build();
         } catch (IOException e) {
             throw new CampingRouteImageStorageException(
-                    "Could not delete directory containing images for camping route with id " + id);
+                    "Could not delete directory containing images for camping route with id " + campingRouteId);
         }
     }
 }

@@ -33,7 +33,7 @@ public class DefaultExceptionHandler {
 
     @ExceptionHandler({InvalidPasswordException.class,
             InvalidCredentialsException.class})
-    public ResponseEntity<ExceptionResponse> handleInvalidInformationExcetion(RuntimeException e) {
+    public ResponseEntity<ExceptionResponse> handleInvalidInformationException(RuntimeException e) {
         log.warn("Given information is invalid: {}", e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
@@ -45,6 +45,14 @@ public class DefaultExceptionHandler {
         log.error("Storage exception occurred: {}", e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ExceptionResponse(e.getMessage()));
+    }
+
+    @ExceptionHandler(NotPermittedException.class)
+    public ResponseEntity<ExceptionResponse> handleForbiddenException(RuntimeException e) {
+        log.error("Forbidden action: {}", e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
                 .body(new ExceptionResponse(e.getMessage()));
     }
 
