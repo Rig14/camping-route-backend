@@ -20,7 +20,7 @@ public class UserController {
         return service.createUser(dto);
     }
 
-    @GetMapping("/public/user/verify")
+    @PostMapping("/public/user/verify")
     public ResponseEntity<VerificationDto> verifyUser(@RequestBody UserDto dto) {
         return service.verifyUser(dto);
     }
