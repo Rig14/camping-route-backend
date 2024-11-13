@@ -3,10 +3,13 @@ package ee.taltech.iti03022024backend.service;
 import ee.taltech.iti03022024backend.dto.CommentDto;
 import ee.taltech.iti03022024backend.entity.CampingRouteEntity;
 import ee.taltech.iti03022024backend.entity.CommentEntity;
+import ee.taltech.iti03022024backend.entity.UserEntity;
 import ee.taltech.iti03022024backend.exception.CampingRouteNotFoundException;
+import ee.taltech.iti03022024backend.exception.UserNotFoundException;
 import ee.taltech.iti03022024backend.mapping.CommentMapper;
 import ee.taltech.iti03022024backend.repository.CampingRouteRepository;
 import ee.taltech.iti03022024backend.repository.CommentRepository;
+import ee.taltech.iti03022024backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -22,15 +25,20 @@ import java.util.List;
 @Transactional
 public class CommentService {
     private final CommentMapper commentMapper;
+    private final UserRepository userRepository;
     private final CommentRepository commentRepository;
     private final CampingRouteRepository campingRouteRepository;
 
-    public ResponseEntity<CommentDto> createComment(CommentDto dto, long campingRouteId) {
+    public ResponseEntity<CommentDto> createComment(String principal, CommentDto dto, long campingRouteId) {
         CampingRouteEntity campingRoute = campingRouteRepository.findById(campingRouteId)
                 .orElseThrow(() -> new CampingRouteNotFoundException("Camping route with id of " + campingRouteId + " does not exist"));
 
+        UserEntity user = userRepository.findByUsername(principal)
+                .orElseThrow(() -> new UserNotFoundException("User not found with username: " + principal));
+
         CommentEntity commentEntity = commentMapper.toEntity(dto);
         commentEntity.setCampingRoute(campingRoute);
+        commentEntity.setUser(user);
 
         List<CommentEntity> commentList = campingRoute.getComment();
         if (commentList == null) {

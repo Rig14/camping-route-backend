@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -16,8 +17,8 @@ public class CommentController {
     private final CommentService service;
 
     @PostMapping("/camping_routes/comments/{campingRouteId}")
-    public ResponseEntity<CommentDto> createComment(@RequestBody CommentDto dto, @PathVariable long campingRouteId) {
-        return service.createComment(dto, campingRouteId);
+    public ResponseEntity<CommentDto> createComment(Principal principal, @RequestBody CommentDto dto, @PathVariable long campingRouteId) {
+        return service.createComment(principal.getName(), dto, campingRouteId);
     }
 
     @GetMapping("/public/camping_routes/comments/{campingRouteId}")
