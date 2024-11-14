@@ -17,8 +17,8 @@ public class CampingRouteController {
     private final CampingRouteService service;
 
     @PostMapping("/camping_routes")
-    public ResponseEntity<CampingRouteDto> createCampingRoute( @RequestBody CampingRouteDto dto) {
-        return service.createCampingRoute(dto);
+    public ResponseEntity<CampingRouteDto> createCampingRoute(Principal principal, @RequestBody CampingRouteDto dto) {
+        return service.createCampingRoute(principal.getName(), dto);
     }
 
     @GetMapping("/public/camping_routes")

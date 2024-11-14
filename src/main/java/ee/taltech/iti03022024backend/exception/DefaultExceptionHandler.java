@@ -42,17 +42,17 @@ public class DefaultExceptionHandler {
 
     @ExceptionHandler(CampingRouteImageStorageException.class)
     public ResponseEntity<ExceptionResponse> handleStorageException(CampingRouteImageStorageException e) {
-        log.error("Storage exception occurred: {}", e.getMessage());
+        log.warn("Storage exception occurred: {}", e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ExceptionResponse(e.getMessage()));
     }
 
     @ExceptionHandler(NotPermittedException.class)
-    public ResponseEntity<ExceptionResponse> handleForbiddenException(RuntimeException e) {
-        log.error("Forbidden action: {}", e.getMessage());
+    public ResponseEntity<ExceptionResponse> handleUnauthorizedException(RuntimeException e) {
+        log.warn("Forbidden action: {}", e.getMessage());
         return ResponseEntity
-                .status(HttpStatus.FORBIDDEN)
+                .status(HttpStatus.UNAUTHORIZED)
                 .body(new ExceptionResponse(e.getMessage()));
     }
 
