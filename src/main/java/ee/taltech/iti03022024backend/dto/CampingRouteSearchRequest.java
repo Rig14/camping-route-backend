@@ -9,6 +9,4 @@ public class CampingRouteSearchRequest {
     private String keyword;
     private int pageNumber;
     private int pageSize;
-    private String direction;
-    private String sort;
 }
