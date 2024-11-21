@@ -38,7 +38,7 @@ public class CampingRouteImagesService {
                         + campingRouteId + " does not exist"));
 
         if (!route.getUser().getUsername().equals(principal)) {
-            throw new NotPermittedException("You are not permitted to delete this camping route.");
+            throw new NotPermittedException("You are not permitted to do this action.");
         }
     }
 

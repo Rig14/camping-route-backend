@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +20,6 @@ import java.security.Principal;
 
 @RestController
 @RequiredArgsConstructor
-@Slf4j
 @RequestMapping("api")
 @Tag(name = "Camping routes images", description = "Camping route images management APIs")
 public class CampingRouteImagesController {
