@@ -1,6 +1,8 @@
 package ee.taltech.iti03022024backend.controller;
 
 import ee.taltech.iti03022024backend.dto.CampingRouteDto;
+import ee.taltech.iti03022024backend.dto.CampingRouteSearchRequest;
+import ee.taltech.iti03022024backend.dto.PageResponse;
 import ee.taltech.iti03022024backend.service.CampingRouteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,11 @@ public class CampingRouteController {
     @PostMapping("/camping_routes")
     public ResponseEntity<CampingRouteDto> createCampingRoute(Principal principal, @RequestBody CampingRouteDto dto) {
         return service.createCampingRoute(principal.getName(), dto);
+    }
+
+    @PostMapping("/search")
+    public PageResponse<CampingRouteDto> searchCampingRoutes(@RequestBody CampingRouteSearchRequest searchRequest) {
+        return service.findCampingRoute(searchRequest);
     }
 
     @GetMapping("/public/camping_routes")

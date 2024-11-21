@@ -1,7 +1,10 @@
 package ee.taltech.iti03022024backend.service;
 
 import ee.taltech.iti03022024backend.dto.CampingRouteDto;
+import ee.taltech.iti03022024backend.dto.CampingRouteSearchRequest;
+import ee.taltech.iti03022024backend.dto.PageResponse;
 import ee.taltech.iti03022024backend.entity.CampingRouteEntity;
+import ee.taltech.iti03022024backend.entity.CampingRouteSpecifications;
 import ee.taltech.iti03022024backend.entity.UserEntity;
 import ee.taltech.iti03022024backend.exception.CampingRouteNotFoundException;
 import ee.taltech.iti03022024backend.exception.NotPermittedException;
@@ -11,6 +14,10 @@ import ee.taltech.iti03022024backend.repository.CampingRouteRepository;
 import ee.taltech.iti03022024backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -76,5 +83,24 @@ public class CampingRouteService {
 
         routeRepository.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    public PageResponse<CampingRouteDto> findCampingRoute(CampingRouteSearchRequest searchRequest) {
+        Specification<CampingRouteEntity> spec = Specification.where(null);
+
+        if (searchRequest.getKeyword() != null && !searchRequest.getKeyword().isEmpty()) {
+            spec = spec.and(CampingRouteSpecifications.hasKeyword(searchRequest.getKeyword()));
+        }
+
+        Pageable pageable = PageRequest.of(searchRequest.getPageNumber(), searchRequest.getPageSize());
+
+        Page<CampingRouteEntity> resultPage = routeRepository.findAll(spec, pageable);
+
+        List<CampingRouteDto> dtos = resultPage.getContent()
+                                           .stream()
+                                           .map(mapper::toDto) // Adjusted mapper reference for consistency
+                                           .toList();
+        // Mapping
+        return new PageResponse<>(dtos, resultPage.getTotalElements(), resultPage.getTotalPages());
     }
 }
