@@ -21,7 +21,7 @@ import java.security.Principal;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api")
-@Tag(name = "Camping routes images", description = "Camping route images management APIs")
+@Tag(name = "Camping route images", description = "Camping route images management APIs")
 public class CampingRouteImagesController {
     private final CampingRouteImagesService campingRouteImagesService;
 
@@ -96,7 +96,7 @@ public class CampingRouteImagesController {
                     examples = @ExampleObject(value = "{\"message\": \"Could not find and read file: <filename>\"}")
             )
     )
-    @ApiResponse(responseCode = "500", description = "Something with getting the file",
+    @ApiResponse(responseCode = "500", description = "Something went wrong with getting the file",
             content = @Content(
                     schema = @Schema(implementation = ExceptionResponse.class),
                     examples = @ExampleObject(value = "{\"message\": \"Invalid file path\"}")
@@ -112,10 +112,21 @@ public class CampingRouteImagesController {
             description = "Delete image from system with provided camping route ID and image name"
     )
     @ApiResponse(responseCode = "204", description = "Image successfully deleted from the system")
-    @ApiResponse(responseCode = "404", description = "Image not found from the system",
+    @ApiResponse(responseCode = "404", description = "Information not found from the system",
             content = @Content(
                     schema = @Schema(implementation = ExceptionResponse.class),
-                    examples = @ExampleObject(value = "{\"message\": \"File <imagename> does not exist\"}")
+                    examples = {
+                            @ExampleObject(
+                                    name = "imageNotExisting",
+                                    summary = "Image does not exist",
+                                    value = "{\"message\": \"File does not exist\"}"
+                            ),
+                            @ExampleObject(
+                                    name = "campingRouteNotExisting",
+                                    summary = "Camping route does not exist",
+                                    value = "{\"message\": \"Camping route with id of 0 does not exist\"}"
+                            )
+                    }
             )
     )
     @ApiResponse(responseCode = "401", description = "User is not permitted to delete image from this camping route",
@@ -143,10 +154,21 @@ public class CampingRouteImagesController {
             description = "Delete all images from system with provided camping route ID"
     )
     @ApiResponse(responseCode = "204", description = "Images successfully deleted from the system")
-    @ApiResponse(responseCode = "404", description = "Images not found from the system",
+    @ApiResponse(responseCode = "404", description = "Information not found from the system",
             content = @Content(
                     schema = @Schema(implementation = ExceptionResponse.class),
-                    examples = @ExampleObject(value = "{\"message\": \"Images could not be found for camping route with id: 0\"}")
+                    examples = {
+                            @ExampleObject(
+                                    name = "imagesNotExisting",
+                                    summary = "Images does not exist",
+                                    value = "{\"message\": \"Images could not be found for camping route with id: 0\"}"
+                            ),
+                            @ExampleObject(
+                                    name = "campingRouteNotExisting",
+                                    summary = "Camping route does not exist",
+                                    value = "{\"message\": \"Camping route with id of 0 does not exist\"}"
+                            )
+                    }
             )
     )
     @ApiResponse(responseCode = "401", description = "User is not permitted to delete images from this camping route",
