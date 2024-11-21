@@ -3,7 +3,6 @@ package ee.taltech.iti03022024backend.controller;
 import ee.taltech.iti03022024backend.dto.CampingRouteImageNamesDto;
 import ee.taltech.iti03022024backend.service.CampingRouteImagesService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +13,6 @@ import java.security.Principal;
 
 @RestController
 @RequiredArgsConstructor
-@Slf4j
 @RequestMapping("api")
 public class CampingRouteImagesController {
     private final CampingRouteImagesService campingRouteImagesService;
