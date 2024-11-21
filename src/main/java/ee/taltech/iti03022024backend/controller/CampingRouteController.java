@@ -23,7 +23,7 @@ public class CampingRouteController {
         return service.createCampingRoute(principal.getName(), dto);
     }
 
-    @PostMapping("/search")
+    @PostMapping("camping_routes/search")
     public PageResponse<CampingRouteDto> searchCampingRoutes(@RequestBody CampingRouteSearchRequest searchRequest) {
         return service.findCampingRoute(searchRequest);
     }
