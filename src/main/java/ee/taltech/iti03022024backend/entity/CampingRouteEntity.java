@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter @Setter
 @Entity
-@Table(name = "CampingRoute")
+@Table(name = "camping_route")
 public class CampingRouteEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,8 +18,8 @@ public class CampingRouteEntity {
     private String location;
     private String thumbnailUrl;
 
-    @Lob // Large Object (LOB). JPA to handle the XML data appropriately.
-    private String gpx;
+    @ManyToOne
+    private UserEntity user;
 
     @OneToMany
     private List<CommentEntity> comment; // one CampingRoute can have many comments

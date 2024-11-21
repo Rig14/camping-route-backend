@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="Matkarajad" author="31">
+        <createTable tableName="user_data">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" unique="true" nullable="false"/>
+            </column>
+            <column name="username" type="varchar(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="email" type="varchar(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="password" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="camping_route">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" unique="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="text"/>
+            <column name="location" type="varchar(255)"/>
+            <column name="thumbnail_url" type="varchar(255)"/>
+            <column name="user_id" type="bigint">
+                <constraints nullable="false"
+                           foreignKeyName="fk_camping_route_user"
+                           references="user_data(id)"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="comment">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" unique="true" nullable="false"/>
+            </column>
+            <column name="content" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="bigint">
+                <constraints nullable="false"
+                           foreignKeyName="fk_comment_user"
+                           references="user_data(id)"/>
+            </column>
+            <column name="camping_route_id" type="bigint">
+                <constraints nullable="false"
+                           foreignKeyName="fk_comment_camping_route"
+                           references="camping_route(id)"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="user_camping_routes">
+            <column name="user_entity_id" type="bigint">
+                <constraints nullable="false"
+                           foreignKeyName="fk_user_camping_routes_user"
+                           references="user_data(id)"/>
+            </column>
+            <column name="camping_routes_id" type="bigint">
+                <constraints nullable="false"
+                           foreignKeyName="fk_user_camping_routes_route"
+                           references="camping_route(id)"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="user_comments">
+            <column name="user_entity_id" type="bigint">
+                <constraints nullable="false"
+                           foreignKeyName="fk_user_comments_user"
+                           references="user_data(id)"/>
+            </column>
+            <column name="comments_id" type="bigint">
+                <constraints nullable="false"
+                           foreignKeyName="fk_user_comments_comment"
+                           references="comment(id)"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="camping_route_comment">
+            <column name="camping_route_entity_id" type="bigint">
+                <constraints nullable="false"
+                           foreignKeyName="fk_camping_route_comments_route"
+                           references="camping_route(id)"/>
+            </column>
+            <column name="comment_id" type="bigint">
+                <constraints nullable="false"
+                           foreignKeyName="fk_camping_route_comments_comment"
+                           references="comment(id)"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

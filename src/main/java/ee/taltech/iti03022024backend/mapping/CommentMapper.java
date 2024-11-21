@@ -1,8 +1,6 @@
 package ee.taltech.iti03022024backend.mapping;
 
-import ee.taltech.iti03022024backend.dto.CampingRouteDto;
 import ee.taltech.iti03022024backend.dto.CommentDto;
-import ee.taltech.iti03022024backend.entity.CampingRouteEntity;
 import ee.taltech.iti03022024backend.entity.CommentEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
