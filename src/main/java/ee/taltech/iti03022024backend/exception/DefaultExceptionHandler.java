@@ -13,7 +13,8 @@ public class DefaultExceptionHandler {
     @ExceptionHandler({
             CampingRouteNotFoundException.class,
             UserNotFoundException.class,
-            CampingRouteImageNotFound.class})
+            CampingRouteImageNotFound.class,
+            CampingRouteGpxNotFoundException.class})
     public ResponseEntity<ExceptionResponse> handleNotFoundException(RuntimeException e) {
         log.warn("Resource not found: {}", e.getMessage());
         return ResponseEntity
@@ -40,7 +41,9 @@ public class DefaultExceptionHandler {
                 .body(new ExceptionResponse(e.getMessage()));
     }
 
-    @ExceptionHandler(CampingRouteImageStorageException.class)
+    @ExceptionHandler({
+            CampingRouteImageStorageException.class,
+            CampingRouteGpxStorageException.class})
     public ResponseEntity<ExceptionResponse> handleStorageException(CampingRouteImageStorageException e) {
         log.warn("Storage exception occurred: {}", e.getMessage());
         return ResponseEntity
@@ -56,8 +59,8 @@ public class DefaultExceptionHandler {
                 .body(new ExceptionResponse(e.getMessage()));
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public void exception(RuntimeException e) {
+    @ExceptionHandler(Exception.class)
+    public void exception(Exception e) {
         log.error("An exception occurred.", e);
     }
 }
