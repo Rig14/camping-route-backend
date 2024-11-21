@@ -1,6 +1,5 @@
 package ee.taltech.iti03022024backend.controller;
 
-import ee.taltech.iti03022024backend.dto.CampingRouteGpxNameDto;
 import ee.taltech.iti03022024backend.service.CampingRouteGpxService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -25,8 +24,15 @@ public class CampingRouteGpxController {
         return gpxService.storeGpx(principal.getName(), file, id);
     }
 
-    @GetMapping("/public/camping_routes/gpx/{id}")
-    public ResponseEntity<Resource> getImageNames(@PathVariable long id) {
-        return gpxService.getGpx(id);
+    @GetMapping("/public/camping_routes/gpx/{campingRouteId}")
+    public ResponseEntity<Resource> getGpx(@PathVariable long campingRouteId) {
+        return gpxService.getGpx(campingRouteId);
+    }
+
+    @DeleteMapping("/camping_routes/gpx/{id}")
+    public ResponseEntity<Void> deleteGpx(
+            Principal principal,
+            @PathVariable long id) {
+        return gpxService.deleteGpx(principal.getName(), id);
     }
 }
