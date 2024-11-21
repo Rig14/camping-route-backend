@@ -3,6 +3,7 @@ package ee.taltech.iti03022024backend.service;
 import ee.taltech.iti03022024backend.entity.CampingRouteEntity;
 import ee.taltech.iti03022024backend.exception.CampingRouteGpxNotFoundException;
 import ee.taltech.iti03022024backend.exception.CampingRouteGpxStorageException;
+import ee.taltech.iti03022024backend.exception.CampingRouteNotFoundException;
 import ee.taltech.iti03022024backend.exception.NotPermittedException;
 import ee.taltech.iti03022024backend.repository.CampingRouteRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,17 +25,16 @@ import java.nio.file.StandardCopyOption;
 @RequiredArgsConstructor
 @Slf4j
 public class CampingRouteGpxService {
-
     private final Path rootDir = Path.of("files").resolve("camping_route_gpx");
     private final CampingRouteRepository repository;
 
     private void validateUser(String principal, long campingRouteId) {
         CampingRouteEntity route = repository.findById(campingRouteId)
-                .orElseThrow(() -> new CampingRouteGpxNotFoundException("Camping route with id of "
+                .orElseThrow(() -> new CampingRouteNotFoundException("Camping route with id of "
                         + campingRouteId + " does not exist"));
 
         if (!route.getUser().getUsername().equals(principal)) {
-            throw new NotPermittedException("You are not permitted to perform this action.");
+            throw new NotPermittedException("You are not permitted to do this action.");
         }
     }
 
@@ -67,7 +67,7 @@ public class CampingRouteGpxService {
             );
 
         } catch (IOException e) {
-            throw new CampingRouteGpxNotFoundException("GPX file could not be saved.");
+            throw new CampingRouteGpxStorageException("GPX file could not be saved.");
         }
 
         return ResponseEntity.ok().build();
