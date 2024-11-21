@@ -54,17 +54,15 @@ public class CampingRouteGpxService {
                 throw new CampingRouteGpxStorageException("Only GPX files are allowed.");
             }
 
-            // Create directories if they don't exist
-            var campingRouteDir = rootDir.resolve(String.valueOf(campingRouteId));
-            if (Files.notExists(campingRouteDir)) {
+            if (Files.notExists(rootDir)) {
                 log.info("Creating directory for camping route with id {}", campingRouteId);
-                Files.createDirectories(campingRouteDir);
+                Files.createDirectories(rootDir);
             }
 
             // Save the file, overwriting any existing GPX file
             Files.copy(
                     file.getInputStream(),
-                    campingRouteDir.resolve("route.gpx").normalize().toAbsolutePath(),
+                    rootDir.resolve(campingRouteId + ".gpx").normalize().toAbsolutePath(),
                     StandardCopyOption.REPLACE_EXISTING // Overwrite if file exists
             );
 
@@ -79,8 +77,7 @@ public class CampingRouteGpxService {
         log.info("Getting GPX file for camping route with id {}", campingRouteId);
 
         var filePath = rootDir
-                .resolve(String.valueOf(campingRouteId))
-                .resolve("route.gpx")
+                .resolve(campingRouteId + ".gpx")
                 .normalize()
                 .toAbsolutePath();
 
@@ -103,8 +100,7 @@ public class CampingRouteGpxService {
         log.info("Deleting GPX file for camping route with id {}", campingRouteId);
 
         var filePath = rootDir
-                .resolve(String.valueOf(campingRouteId))
-                .resolve("route.gpx")
+                .resolve(campingRouteId + ".gpx")
                 .normalize()
                 .toAbsolutePath();
 
