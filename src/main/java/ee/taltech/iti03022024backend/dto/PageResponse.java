@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-
 @Data
 @NoArgsConstructor
 public class PageResponse<CampingRouteDto> {
