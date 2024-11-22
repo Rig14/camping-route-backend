@@ -1,6 +1,6 @@
 # Matkarajad
 
-## Purpouse
+## Purpose
 
 The purpose of the application is to enable users to
 create and manage their camping routes. Users can share
