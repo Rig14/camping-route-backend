@@ -10,6 +10,8 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,7 +49,10 @@ public class CommentController {
             )
     )
     @PostMapping("/camping_routes/comments/{campingRouteId}")
-    public ResponseEntity<CommentDto> createComment(Principal principal, @RequestBody CommentDto dto, @PathVariable long campingRouteId) {
+    public ResponseEntity<CommentDto> createComment(
+            Principal principal,
+            @Valid @RequestBody CommentDto dto,
+            @PathVariable long campingRouteId) {
         return service.createComment(principal.getName(), dto, campingRouteId);
     }
 
@@ -63,7 +68,7 @@ public class CommentController {
             )
     )
     @GetMapping("/public/camping_routes/comments/{campingRouteId}")
-    public ResponseEntity<List<CommentDto>> getCommentsByCampingRoute(@PathVariable long campingRouteId) {
+    public ResponseEntity<List<CommentDto>> getCommentsByCampingRoute(@PathVariable @Min(value = 1, message = "Camping route ID must be positive") long campingRouteId) {
         return service.getCommentsByCampingRoute(campingRouteId);
     }
 
@@ -73,7 +78,7 @@ public class CommentController {
     )
     @ApiResponse(responseCode = "200", description = "Camping route comments successfully found")
     @GetMapping("/public/camping_routes/comments/user/{userId}")
-    public ResponseEntity<List<CommentDto>> getCommentsByUserId(@PathVariable long userId) {
+    public ResponseEntity<List<CommentDto>> getCommentsByUserId(@PathVariable @Min(value = 1, message = "User ID must be positive") long userId) {
         return service.getCommentsByUserId(userId);
     }
 }

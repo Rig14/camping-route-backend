@@ -3,8 +3,10 @@ package ee.taltech.iti03022024backend.exception;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 @ControllerAdvice
 @Slf4j
@@ -57,6 +59,24 @@ public class DefaultExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(new ExceptionResponse(e.getMessage()));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ExceptionResponse> handleValidationException(MethodArgumentNotValidException e) {
+        log.warn("Some given information was not valid: {}", e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ExceptionResponse(e.getMessage()));
+    }
+
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    public ResponseEntity<ExceptionResponse> handleValidationException(HandlerMethodValidationException e) {
+        String message = e.getAllValidationResults()
+                .getFirst().getResolvableErrors()
+                .getFirst().getDefaultMessage();
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ExceptionResponse(message));
     }
 
     @ExceptionHandler(Exception.class)
