@@ -8,7 +8,8 @@ public class CampingRouteSpecifications {
             if (keyword == null || keyword.isEmpty()) {
                 return null;
             }
-            String likePattern = '%' + keyword + '%';
+            String likePattern = '%' + keyword.toLowerCase() + '%';
+            System.out.println("This is the like pattern: " + likePattern);
             return criteriaBuilder.or(
                     criteriaBuilder.like(root.get("name"), likePattern),
                     criteriaBuilder.like(root.get("description"), likePattern),
