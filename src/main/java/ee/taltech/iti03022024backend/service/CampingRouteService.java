@@ -85,7 +85,25 @@ public class CampingRouteService {
         return ResponseEntity.noContent().build();
     }
 
+    public PageResponse<CampingRouteDto> getCampingRoutesForHomepage(CampingRouteSearchRequest searchRequest) {
+        System.out.println("Homepage search request received: " + searchRequest);
+
+        Specification<CampingRouteEntity> spec = Specification.where(null);
+
+        Pageable pageable = PageRequest.of(searchRequest.getPageNumber(), searchRequest.getPageSize());
+
+        Page<CampingRouteEntity> resultPage = routeRepository.findAll(spec, pageable);
+
+        List<CampingRouteDto> dtos = resultPage.getContent()
+                .stream()
+                .map(mapper::toDto)
+                .toList();
+
+        return new PageResponse<>(dtos, resultPage.getTotalElements(), resultPage.getTotalPages());
+    }
+
     public PageResponse<CampingRouteDto> findCampingRoute(CampingRouteSearchRequest searchRequest) {
+        System.out.println("Search request received: " + searchRequest);
         Specification<CampingRouteEntity> spec = Specification.where(null);
 
         if (searchRequest.getKeyword() != null && !searchRequest.getKeyword().isEmpty()) {
@@ -97,10 +115,10 @@ public class CampingRouteService {
         Page<CampingRouteEntity> resultPage = routeRepository.findAll(spec, pageable);
 
         List<CampingRouteDto> dtos = resultPage.getContent()
-                                           .stream()
-                                           .map(mapper::toDto) // Adjusted mapper reference for consistency
-                                           .toList();
-        // Mapping
+                .stream()
+                .map(mapper::toDto) // Adjusted mapper reference for consistency
+                .toList();
+
         return new PageResponse<>(dtos, resultPage.getTotalElements(), resultPage.getTotalPages());
     }
 }

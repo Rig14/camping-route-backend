@@ -23,17 +23,15 @@ public class CampingRouteController {
         return service.createCampingRoute(principal.getName(), dto);
     }
 
-    @PostMapping("camping_routes/search")
+    @PostMapping("/public/camping_routes/search")
     public PageResponse<CampingRouteDto> searchCampingRoutes(@RequestBody CampingRouteSearchRequest searchRequest) {
+        System.out.println("Request received");
         return service.findCampingRoute(searchRequest);
     }
 
-    @GetMapping("/public/camping_routes")
-    public ResponseEntity<List<CampingRouteDto>> getCampingRoutes(
-            @RequestParam("name") Optional<String> name,
-            @RequestParam("location") Optional<String> location,
-            @RequestParam("username") Optional<String> username) {
-        return service.getCampingRoutes(name, location, username);
+    @PostMapping("/public/camping_routes")
+    public PageResponse<CampingRouteDto> getCampingRoutes(@RequestBody CampingRouteSearchRequest searchRequest) {
+        return service.getCampingRoutesForHomepage(searchRequest);
     }
 
     @GetMapping("/public/camping_routes/user/{userId}")
