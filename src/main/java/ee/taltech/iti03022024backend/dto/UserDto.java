@@ -26,6 +26,6 @@ public class UserDto {
     @Pattern(regexp = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$",
             message = "Password must be at least 8 characters long and contain at least one uppercase letter, " +
                     "one lowercase letter, one number, and one special character")
-    @Schema(description = "Password of the user", example = "<some hash>")
+    @Schema(description = "Password of the user", example = "<password>")
     private String password;
 }
