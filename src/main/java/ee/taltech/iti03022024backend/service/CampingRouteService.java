@@ -46,19 +46,6 @@ public class CampingRouteService {
         return ResponseEntity.ok(mapper.toDto(routeRepository.save(route)));
     }
 
-    public ResponseEntity<List<CampingRouteDto>> getCampingRoutes(Optional<String> name, Optional<String> location, Optional<String> username) {
-        log.info("Fetching all camping routes with filters for {} {} {}",
-                name.orElse(""),
-                location.orElse(""),
-                username.orElse("")
-        );
-        return ResponseEntity.ok(mapper.toDtoList(routeRepository.findByNameContainingIgnoreCaseOrLocationContainingIgnoreCaseOrUser_UsernameContainingIgnoreCase(
-                name.orElse(""),
-                location.orElse(""),
-                username.orElse("")
-        )));
-    }
-
     public ResponseEntity<List<CampingRouteDto>> getCampingRoutesByUserId(long id) {
         log.info("Fetching all camping routes with user id: {}", id);
         return ResponseEntity.ok(mapper.toDtoList(routeRepository.findByUser_Id(id)));
