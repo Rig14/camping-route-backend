@@ -57,7 +57,7 @@ public class CampingRouteController {
     @GetMapping("/public/camping_routes")
     public ResponseEntity<List<CampingRouteDto>> getCampingRoutes(
             @RequestParam("name") @Size(max = 100) Optional<String> name,
-            @RequestParam("location") @Size(max = 200) Optional<String> location,
+            @RequestParam("location") @Size(max = 100) Optional<String> location,
             @RequestParam("username") Optional<String> username) {
         return service.getCampingRoutes(name, location, username);
     }
