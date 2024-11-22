@@ -12,15 +12,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -78,7 +75,7 @@ public class CampingRouteController {
     @ApiResponse(responseCode = "200", description = "Camping routes successfully found by user ID")
     @GetMapping("/public/camping_routes/user/{userId}")
     public ResponseEntity<List<CampingRouteDto>> getCampingRoutesByUserId(
-            @PathVariable @Min(value = 1, message = "User ID must be positive") long userId) {
+            @PathVariable long userId) {
         return service.getCampingRoutesByUserId(userId);
     }
 
@@ -93,8 +90,7 @@ public class CampingRouteController {
                     examples = @ExampleObject(value = "{\"message\": \"Camping route with id of 0 does not exist\"}")
             ))
     @GetMapping("/public/camping_routes/{id}")
-    public ResponseEntity<CampingRouteDto> getCampingRoute(
-            @PathVariable @Min(value = 1, message = "ID must be positive") long id) {
+    public ResponseEntity<CampingRouteDto> getCampingRoute(@PathVariable long id) {
         return service.getCampingRoute(id);
     }
 
@@ -118,7 +114,7 @@ public class CampingRouteController {
     @DeleteMapping("/camping_routes/{id}")
     public ResponseEntity<Void> deleteCampingRoute(
             Principal principal,
-            @PathVariable @Min(value = 1, message = "ID must be positive") long id) {
+            @PathVariable long id) {
         return service.deleteCampingRoute(principal.getName(), id);
     }
 }
