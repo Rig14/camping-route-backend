@@ -51,18 +51,23 @@ public class CampingRouteController {
         return service.createCampingRoute(principal.getName(), dto);
     }
 
+    @Operation(
+            summary = "Search camping route",
+            description = "Search camping route from the system based on provided information"
+    )
+    @ApiResponse(responseCode = "200", description = "Found camping route successfully from the system")
     @PostMapping("/public/camping_routes/search")
-    public ResponseEntity<PageResponse<CampingRouteDto>> searchCampingRoutes(@RequestBody CampingRouteSearchRequest searchRequest) {
+    public ResponseEntity<PageResponse<CampingRouteDto>> searchCampingRoutes(@Valid @RequestBody CampingRouteSearchRequest searchRequest) {
         return service.findCampingRoute(searchRequest);
     }
 
     @Operation(
             summary = "Get camping routes",
-            description = "Get camping routes by name, location, username or get all if criteria is not provided"
+            description = "Get camping routes from the system based on provided information"
     )
-    @ApiResponse(responseCode = "200", description = "Camping routes successfuly found by given criteria")
+    @ApiResponse(responseCode = "200", description = "Camping routes successfully found by given criteria")
     @PostMapping("/public/camping_routes")
-    public ResponseEntity<PageResponse<CampingRouteDto>> getCampingRoutes(@RequestBody CampingRouteSearchRequest searchRequest) {
+    public ResponseEntity<PageResponse<CampingRouteDto>> getCampingRoutes(@Valid @RequestBody CampingRouteSearchRequest searchRequest) {
         return service.getCampingRoutesForHomepage(searchRequest);
     }
 

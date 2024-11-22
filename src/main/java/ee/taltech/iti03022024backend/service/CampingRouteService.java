@@ -73,7 +73,7 @@ public class CampingRouteService {
     }
 
     public ResponseEntity<PageResponse<CampingRouteDto>> getCampingRoutesForHomepage(CampingRouteSearchRequest searchRequest) {
-        System.out.println("Homepage search request received: " + searchRequest);
+        log.info("Homepage search request received: " + searchRequest);
 
         Specification<CampingRouteEntity> spec = Specification.where(null);
 
@@ -90,7 +90,7 @@ public class CampingRouteService {
     }
 
     public ResponseEntity<PageResponse<CampingRouteDto>> findCampingRoute(CampingRouteSearchRequest searchRequest) {
-        System.out.println("Search request received: " + searchRequest);
+        log.info("Search request received: " + searchRequest);
         Specification<CampingRouteEntity> spec = Specification.where(null);
 
         if (searchRequest.getKeyword() != null && !searchRequest.getKeyword().isEmpty()) {
