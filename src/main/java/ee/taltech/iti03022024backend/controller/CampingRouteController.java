@@ -1,6 +1,8 @@
 package ee.taltech.iti03022024backend.controller;
 
 import ee.taltech.iti03022024backend.dto.CampingRouteDto;
+import ee.taltech.iti03022024backend.dto.CampingRouteSearchRequest;
+import ee.taltech.iti03022024backend.dto.PageResponse;
 import ee.taltech.iti03022024backend.exception.ExceptionResponse;
 import ee.taltech.iti03022024backend.service.CampingRouteService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -49,17 +51,19 @@ public class CampingRouteController {
         return service.createCampingRoute(principal.getName(), dto);
     }
 
+    @PostMapping("/public/camping_routes/search")
+    public ResponseEntity<PageResponse<CampingRouteDto>> searchCampingRoutes(@RequestBody CampingRouteSearchRequest searchRequest) {
+        return service.findCampingRoute(searchRequest);
+    }
+
     @Operation(
             summary = "Get camping routes",
             description = "Get camping routes by name, location, username or get all if criteria is not provided"
     )
-    @ApiResponse(responseCode = "200", description = "Camping routes successfully found by given criteria")
-    @GetMapping("/public/camping_routes")
-    public ResponseEntity<List<CampingRouteDto>> getCampingRoutes(
-            @RequestParam("name") @Size(max = 100) Optional<String> name,
-            @RequestParam("location") @Size(max = 100) Optional<String> location,
-            @RequestParam("username") Optional<String> username) {
-        return service.getCampingRoutes(name, location, username);
+    @ApiResponse(responseCode = "200", description = "Camping routes successfuly found by given criteria")
+    @PostMapping("/public/camping_routes")
+    public ResponseEntity<PageResponse<CampingRouteDto>> getCampingRoutes(@RequestBody CampingRouteSearchRequest searchRequest) {
+        return service.getCampingRoutesForHomepage(searchRequest);
     }
 
     @Operation(
@@ -98,7 +102,14 @@ public class CampingRouteController {
             content = @Content(
                     schema = @Schema(implementation = ExceptionResponse.class),
                     examples = @ExampleObject(value = "{\"message\": \"Camping route with id of 0 does not exist\"}")
-            ))
+            )
+    )
+    @ApiResponse(responseCode = "401", description = "User that tries to delete camping rote is not permitted to do that",
+            content = @Content(
+                    schema = @Schema(implementation = ExceptionResponse.class),
+                    examples = @ExampleObject(value = "{\"message\": \"You are not permitted to delete this camping route.\"}")
+            )
+    )
     @DeleteMapping("/camping_routes/{id}")
     public ResponseEntity<Void> deleteCampingRoute(
             Principal principal,

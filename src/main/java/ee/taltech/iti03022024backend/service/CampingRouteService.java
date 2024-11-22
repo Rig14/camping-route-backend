@@ -1,7 +1,10 @@
 package ee.taltech.iti03022024backend.service;
 
 import ee.taltech.iti03022024backend.dto.CampingRouteDto;
+import ee.taltech.iti03022024backend.dto.CampingRouteSearchRequest;
+import ee.taltech.iti03022024backend.dto.PageResponse;
 import ee.taltech.iti03022024backend.entity.CampingRouteEntity;
+import ee.taltech.iti03022024backend.entity.CampingRouteSpecifications;
 import ee.taltech.iti03022024backend.entity.UserEntity;
 import ee.taltech.iti03022024backend.exception.CampingRouteNotFoundException;
 import ee.taltech.iti03022024backend.exception.NotPermittedException;
@@ -11,6 +14,10 @@ import ee.taltech.iti03022024backend.repository.CampingRouteRepository;
 import ee.taltech.iti03022024backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,19 +46,6 @@ public class CampingRouteService {
         return ResponseEntity.ok(mapper.toDto(routeRepository.save(route)));
     }
 
-    public ResponseEntity<List<CampingRouteDto>> getCampingRoutes(Optional<String> name, Optional<String> location, Optional<String> username) {
-        log.info("Fetching all camping routes with filters for {} {} {}",
-                name.orElse(""),
-                location.orElse(""),
-                username.orElse("")
-        );
-        return ResponseEntity.ok(mapper.toDtoList(routeRepository.findByNameContainingIgnoreCaseOrLocationContainingIgnoreCaseOrUser_UsernameContainingIgnoreCase(
-                name.orElse(""),
-                location.orElse(""),
-                username.orElse("")
-        )));
-    }
-
     public ResponseEntity<List<CampingRouteDto>> getCampingRoutesByUserId(long id) {
         log.info("Fetching all camping routes with user id: {}", id);
         return ResponseEntity.ok(mapper.toDtoList(routeRepository.findByUser_Id(id)));
@@ -76,5 +70,42 @@ public class CampingRouteService {
 
         routeRepository.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    public ResponseEntity<PageResponse<CampingRouteDto>> getCampingRoutesForHomepage(CampingRouteSearchRequest searchRequest) {
+        System.out.println("Homepage search request received: " + searchRequest);
+
+        Specification<CampingRouteEntity> spec = Specification.where(null);
+
+        Pageable pageable = PageRequest.of(searchRequest.getPageNumber(), searchRequest.getPageSize());
+
+        Page<CampingRouteEntity> resultPage = routeRepository.findAll(spec, pageable);
+
+        List<CampingRouteDto> dtos = resultPage.getContent()
+                .stream()
+                .map(mapper::toDto)
+                .toList();
+
+        return ResponseEntity.ok(new PageResponse<>(dtos, resultPage.getTotalElements(), resultPage.getTotalPages()));
+    }
+
+    public ResponseEntity<PageResponse<CampingRouteDto>> findCampingRoute(CampingRouteSearchRequest searchRequest) {
+        System.out.println("Search request received: " + searchRequest);
+        Specification<CampingRouteEntity> spec = Specification.where(null);
+
+        if (searchRequest.getKeyword() != null && !searchRequest.getKeyword().isEmpty()) {
+            spec = spec.and(CampingRouteSpecifications.hasKeyword(searchRequest.getKeyword()));
+        }
+
+        Pageable pageable = PageRequest.of(searchRequest.getPageNumber(), searchRequest.getPageSize());
+
+        Page<CampingRouteEntity> resultPage = routeRepository.findAll(spec, pageable);
+
+        List<CampingRouteDto> dtos = resultPage.getContent()
+                .stream()
+                .map(mapper::toDto) // Adjusted mapper reference for consistency
+                .toList();
+
+        return ResponseEntity.ok(new PageResponse<>(dtos, resultPage.getTotalElements(), resultPage.getTotalPages()));
     }
 }
