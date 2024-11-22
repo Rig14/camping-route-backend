@@ -85,7 +85,7 @@ public class CampingRouteService {
         return ResponseEntity.noContent().build();
     }
 
-    public PageResponse<CampingRouteDto> getCampingRoutesForHomepage(CampingRouteSearchRequest searchRequest) {
+    public ResponseEntity<PageResponse<CampingRouteDto>> getCampingRoutesForHomepage(CampingRouteSearchRequest searchRequest) {
         System.out.println("Homepage search request received: " + searchRequest);
 
         Specification<CampingRouteEntity> spec = Specification.where(null);
@@ -99,10 +99,10 @@ public class CampingRouteService {
                 .map(mapper::toDto)
                 .toList();
 
-        return new PageResponse<>(dtos, resultPage.getTotalElements(), resultPage.getTotalPages());
+        return ResponseEntity.ok(new PageResponse<>(dtos, resultPage.getTotalElements(), resultPage.getTotalPages()));
     }
 
-    public PageResponse<CampingRouteDto> findCampingRoute(CampingRouteSearchRequest searchRequest) {
+    public ResponseEntity<PageResponse<CampingRouteDto>> findCampingRoute(CampingRouteSearchRequest searchRequest) {
         System.out.println("Search request received: " + searchRequest);
         Specification<CampingRouteEntity> spec = Specification.where(null);
 
@@ -119,6 +119,6 @@ public class CampingRouteService {
                 .map(mapper::toDto) // Adjusted mapper reference for consistency
                 .toList();
 
-        return new PageResponse<>(dtos, resultPage.getTotalElements(), resultPage.getTotalPages());
+        return ResponseEntity.ok(new PageResponse<>(dtos, resultPage.getTotalElements(), resultPage.getTotalPages()));
     }
 }

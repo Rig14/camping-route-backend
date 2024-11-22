@@ -52,8 +52,7 @@ public class CampingRouteController {
     }
 
     @PostMapping("/public/camping_routes/search")
-    public PageResponse<CampingRouteDto> searchCampingRoutes(@RequestBody CampingRouteSearchRequest searchRequest) {
-        System.out.println("Request received");
+    public ResponseEntity<PageResponse<CampingRouteDto>> searchCampingRoutes(@RequestBody CampingRouteSearchRequest searchRequest) {
         return service.findCampingRoute(searchRequest);
     }
 
@@ -63,7 +62,7 @@ public class CampingRouteController {
     )
     @ApiResponse(responseCode = "200", description = "Camping routes successfuly found by given criteria")
     @PostMapping("/public/camping_routes")
-    public PageResponse<CampingRouteDto> getCampingRoutes(@RequestBody CampingRouteSearchRequest searchRequest) {
+    public ResponseEntity<PageResponse<CampingRouteDto>> getCampingRoutes(@RequestBody CampingRouteSearchRequest searchRequest) {
         return service.getCampingRoutesForHomepage(searchRequest);
     }
 
