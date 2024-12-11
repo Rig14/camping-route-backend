@@ -19,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional
 public class CampingRouteViewService {
+    private static final String CAMPING_ROUTE_DOES_NOT_EXIST = "Camping route with id of %d does not exist";
+
     private final ViewRepository viewRepository;
     private final CampingRouteRepository campingRouteRepository;
     private final UserRepository userRepository;
@@ -26,7 +28,7 @@ public class CampingRouteViewService {
     public ResponseEntity<ViewDto> addViewForCampingRoute(long campingRouteId) {
         log.info("Adding view for camping route with id {}", campingRouteId);
 
-        var campingRoute = campingRouteRepository.findById(campingRouteId).orElseThrow(() -> new CampingRouteNotFoundException("Camping route with id of " + campingRouteId + " does not exist"));
+        var campingRoute = campingRouteRepository.findById(campingRouteId).orElseThrow(() -> new CampingRouteNotFoundException(String.format(CAMPING_ROUTE_DOES_NOT_EXIST, campingRouteId)));
 
         var view = new ViewEntity();
         view.setCampingRoute(campingRoute);
@@ -50,7 +52,7 @@ public class CampingRouteViewService {
     public ResponseEntity<Void> deleteViewsFromCampingRoute(String name, long campingRouteId) {
         log.info("Deleting views for camping route with id {}", campingRouteId);
 
-        var campingRoute = campingRouteRepository.findById(campingRouteId).orElseThrow(() -> new CampingRouteNotFoundException("Camping route with id of " + campingRouteId + " does not exist"));
+        var campingRoute = campingRouteRepository.findById(campingRouteId).orElseThrow(() -> new CampingRouteNotFoundException(String.format(CAMPING_ROUTE_DOES_NOT_EXIST, campingRouteId)));
         var user = userRepository.findByUsername(name).orElseThrow(() -> new UserNotFoundException("User not found with username: " + name));
 
         if (!campingRoute.getUser().equals(user)) {
