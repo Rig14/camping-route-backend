@@ -4,10 +4,10 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.swing.text.View;
 import java.util.List;
 
-@Getter @Setter
+@Getter
+@Setter
 @Entity
 @Table(name = "camping_route")
 public class CampingRouteEntity {
@@ -23,9 +23,9 @@ public class CampingRouteEntity {
     @JoinColumn(name = "user_data_id")
     private UserEntity user;
 
-    @OneToMany(mappedBy = "campingRoute")
+    @OneToMany(mappedBy = "campingRoute", cascade = CascadeType.ALL)
     private List<CommentEntity> comment; // one CampingRoute can have many comments
 
-    @OneToMany(mappedBy = "campingRoute")
+    @OneToMany(mappedBy = "campingRoute", cascade = CascadeType.ALL)
     private List<ViewEntity> views;
 }
