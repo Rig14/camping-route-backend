@@ -17,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -73,10 +72,9 @@ public class CampingRouteController {
             description = "Get camping routes from the system based on the given user ID"
     )
     @ApiResponse(responseCode = "200", description = "Camping routes successfully found by user ID")
-    @GetMapping("/public/camping_routes/user/{userId}")
-    public ResponseEntity<List<CampingRouteDto>> getCampingRoutesByUserId(
-            @PathVariable long userId) {
-        return service.getCampingRoutesByUserId(userId);
+    @PostMapping("/public/camping_routes/user")
+    public ResponseEntity<PageResponse<CampingRouteDto>> getCampingRoutesByUserId(@Valid @RequestBody CampingRouteSearchRequest searchRequest) {
+        return service.getCampingRoutesByUserId(searchRequest);
     }
 
     @Operation(
