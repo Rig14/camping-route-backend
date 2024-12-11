@@ -22,5 +22,6 @@ public class ViewEntity {
     private Date date = new Date();
 
     @ManyToOne
+    @JoinColumn(name = "camping_route_id")
     private CampingRouteEntity campingRoute;
 }

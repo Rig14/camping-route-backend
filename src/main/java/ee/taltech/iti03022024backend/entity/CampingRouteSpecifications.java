@@ -1,7 +1,9 @@
 package ee.taltech.iti03022024backend.entity;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
 
+@Slf4j
 public class CampingRouteSpecifications {
     public static Specification<CampingRouteEntity> hasKeyword(String keyword) {
         return (root, query, criteriaBuilder) -> {
@@ -9,7 +11,7 @@ public class CampingRouteSpecifications {
                 return null;
             }
             String likePattern = '%' + keyword.toLowerCase() + '%';
-            System.out.println("This is the like pattern: " + likePattern);
+            log.info("This is the like pattern: {}", likePattern);
             return criteriaBuilder.or(
                     criteriaBuilder.like(root.get("name"), likePattern),
                     criteriaBuilder.like(root.get("description"), likePattern),

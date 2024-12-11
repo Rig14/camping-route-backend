@@ -17,9 +17,9 @@ public class UserEntity {
     private String email;
     private String password;
 
-    @OneToMany
+    @OneToMany(mappedBy = "user")
     private List<CampingRouteEntity> campingRoutes;
 
-    @OneToMany
+    @OneToMany(mappedBy = "user")
     private List<CommentEntity> comments;
 }
