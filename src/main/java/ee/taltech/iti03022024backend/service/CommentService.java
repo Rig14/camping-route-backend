@@ -5,6 +5,7 @@ import ee.taltech.iti03022024backend.entity.CampingRouteEntity;
 import ee.taltech.iti03022024backend.entity.CommentEntity;
 import ee.taltech.iti03022024backend.entity.UserEntity;
 import ee.taltech.iti03022024backend.exception.CampingRouteNotFoundException;
+import ee.taltech.iti03022024backend.exception.CommentNotExistsException;
 import ee.taltech.iti03022024backend.exception.UserNotFoundException;
 import ee.taltech.iti03022024backend.mapping.CommentMapper;
 import ee.taltech.iti03022024backend.repository.CampingRouteRepository;
@@ -70,5 +71,36 @@ public class CommentService {
 
         return campingRouteRepository.findById(id)
                 .orElseThrow(() -> new CampingRouteNotFoundException("Camping route with id of " + id + " does not exist"));
+    }
+
+    public ResponseEntity<Void> deleteCommentByCommentId(String name, long commentId) {
+        log.info("Deleting comment with id {}", commentId);
+
+        var comment = commentRepository.findById(commentId).orElseThrow(() -> new CommentNotExistsException("Comment with id of " + commentId + " does not exist"));
+        var user = userRepository.findByUsername(name).orElseThrow(() -> new UserNotFoundException("User not found with username: " + name));
+
+        if (!comment.getUser().equals(user)) {
+            throw new UserNotFoundException("User does not have permission to delete comment with id of " + commentId);
+        }
+
+        commentRepository.deleteById(commentId);
+        log.info("Comment with id {} deleted", commentId);
+        return ResponseEntity.noContent().build();
+    }
+
+    public ResponseEntity<Void> deleteCommentsFromCampingRoute(String name, long campingRouteId) {
+        log.info("Deleting comments for camping route with id {}", campingRouteId);
+
+        var campingRoute = campingRouteRepository.findById(campingRouteId).orElseThrow(() -> new CampingRouteNotFoundException("Camping route with id of " + campingRouteId + " does not exist"));
+        var user = userRepository.findByUsername(name).orElseThrow(() -> new UserNotFoundException("User not found with username: " + name));
+
+        if (!campingRoute.getUser().equals(user)) {
+            throw new UserNotFoundException("User does not have permission to delete comments for camping route with id of " + campingRouteId);
+        }
+
+        commentRepository.deleteByCampingRoute_Id(campingRouteId);
+        log.info("Comments deleted for camping route with id {}", campingRouteId);
+
+        return ResponseEntity.noContent().build();
     }
 }

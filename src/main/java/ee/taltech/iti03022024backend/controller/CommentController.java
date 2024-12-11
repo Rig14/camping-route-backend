@@ -80,4 +80,50 @@ public class CommentController {
     public ResponseEntity<List<CommentDto>> getCommentsByUserId(@PathVariable long userId) {
         return service.getCommentsByUserId(userId);
     }
+
+    @Operation(
+            summary = "Delete comments by user ID",
+            description = "Delete camping route comments by provided user ID from the system"
+    )
+    @ApiResponse(responseCode = "204", description = "Camping route comment successfully deleted")
+    @ApiResponse(responseCode = "404", description = "Camping route with provided ID was not found",
+            content = @Content(
+                    schema = @Schema(implementation = ExceptionResponse.class),
+                    examples = @ExampleObject(value = "{\"message\": \"Camping route with id of 0 does not exist\"}")
+            ))
+    @ApiResponse(responseCode = "401", description = "User that tries to delete comments is not permitted to do that",
+            content = @Content(
+                    schema = @Schema(implementation = ExceptionResponse.class),
+                    examples = @ExampleObject(value = "{\"message\": \"You are not permitted to delete this users comments.\"}")
+            ))
+    @DeleteMapping("/camping_routes/comments/single/{commentId}")
+    public ResponseEntity<Void> deleteCommentByCommentId(
+            @PathVariable long commentId,
+            Principal principal
+    ) {
+        return service.deleteCommentByCommentId(principal.getName(), commentId);
+    }
+
+    @Operation(
+            summary = "Delete comments by camping route ID",
+            description = "Delete camping route comments by provided camping route ID from the system"
+    )
+    @ApiResponse(responseCode = "204", description = "Camping route comments successfully deleted")
+    @ApiResponse(responseCode = "404", description = "Camping route with provided ID was not found",
+            content = @Content(
+                    schema = @Schema(implementation = ExceptionResponse.class),
+                    examples = @ExampleObject(value = "{\"message\": \"Camping route with id of 0 does not exist\"}")
+            ))
+    @ApiResponse(responseCode = "401", description = "User that tries to delete comments is not permitted to do that",
+            content = @Content(
+                    schema = @Schema(implementation = ExceptionResponse.class),
+                    examples = @ExampleObject(value = "{\"message\": \"You are not permitted to delete this users comments.\"}")
+            ))
+    @DeleteMapping("/camping_routes/comments/{campingRouteId}")
+    public ResponseEntity<Void> deleteCommentsFromCampingRoute(
+            @PathVariable long campingRouteId,
+            Principal principal
+    ) {
+        return service.deleteCommentsFromCampingRoute(principal.getName(), campingRouteId);
+    }
 }
