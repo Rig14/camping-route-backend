@@ -123,6 +123,7 @@ public class CommentController {
     public ResponseEntity<Void> deleteCommentsFromCampingRoute(
             @PathVariable long campingRouteId,
             Principal principal
+
     ) {
         return service.deleteCommentsFromCampingRoute(principal.getName(), campingRouteId);
     }
