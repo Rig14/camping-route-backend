@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
 
-    <changeSet id="Matkarajad" author="31">
+    <changeSet id="Matkarajad" author="rkilks">
         <createTable tableName="user_data">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" unique="true" nullable="false"/>
@@ -31,9 +31,9 @@
             <column name="description" type="text"/>
             <column name="location" type="varchar(255)"/>
             <column name="thumbnail_url" type="varchar(255)"/>
-            <column name="user_id" type="bigint">
+            <column name="user_data_id" type="bigint">
                 <constraints nullable="false"
-                             foreignKeyName="fk_camping_route_user"
+                             foreignKeyName="fk_camping_route_user_data"
                              references="user_data(id)"/>
             </column>
         </createTable>
@@ -45,9 +45,9 @@
             <column name="content" type="text">
                 <constraints nullable="false"/>
             </column>
-            <column name="user_id" type="bigint">
+            <column name="user_data_id" type="bigint">
                 <constraints nullable="false"
-                             foreignKeyName="fk_comment_user"
+                             foreignKeyName="fk_comment_user_data"
                              references="user_data(id)"/>
             </column>
             <column name="camping_route_id" type="bigint">
@@ -66,7 +66,7 @@
             </column>
             <column name="camping_route_id" type="bigint">
                 <constraints nullable="false"
-                             foreignKeyName="fk_comment_camping_route"
+                             foreignKeyName="fk_view_camping_route"
                              references="camping_route(id)"/>
             </column>
         </createTable>

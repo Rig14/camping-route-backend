@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.swing.text.View;
 import java.util.List;
 
 @Getter @Setter
@@ -19,8 +20,12 @@ public class CampingRouteEntity {
     private String thumbnailUrl;
 
     @ManyToOne
+    @JoinColumn(name = "user_data_id")
     private UserEntity user;
 
-    @OneToMany
+    @OneToMany(mappedBy = "campingRoute")
     private List<CommentEntity> comment; // one CampingRoute can have many comments
+
+    @OneToMany(mappedBy = "campingRoute")
+    private List<ViewEntity> views;
 }
