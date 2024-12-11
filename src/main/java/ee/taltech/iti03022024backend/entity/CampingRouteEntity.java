@@ -23,9 +23,9 @@ public class CampingRouteEntity {
     @JoinColumn(name = "user_data_id")
     private UserEntity user;
 
-    @OneToMany(mappedBy = "comment")
+    @OneToMany(mappedBy = "campingRoute")
     private List<CommentEntity> comment; // one CampingRoute can have many comments
 
-    @OneToMany(mappedBy = "view")
+    @OneToMany(mappedBy = "campingRoute")
     private List<ViewEntity> views;
 }
