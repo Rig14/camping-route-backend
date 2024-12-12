@@ -91,20 +91,4 @@ public class CommentService {
         log.info("Comment with id {} deleted", commentId);
         return ResponseEntity.noContent().build();
     }
-
-    public ResponseEntity<Void> deleteCommentsFromCampingRoute(String name, long campingRouteId) {
-        log.info("Deleting comments for camping route with id {}", campingRouteId);
-
-        var campingRoute = campingRouteRepository.findById(campingRouteId).orElseThrow(() -> new CampingRouteNotFoundException(String.format(CAMPING_ROUTE_DOES_NOT_EXIST, campingRouteId)));
-        var user = userRepository.findByUsername(name).orElseThrow(() -> new UserNotFoundException(String.format(USER_NOT_FOUND, name)));
-
-        if (!campingRoute.getUser().equals(user)) {
-            throw new NotPermittedException("User does not have permission to delete comments for camping route with id of " + campingRouteId);
-        }
-
-        commentRepository.deleteByCampingRoute_Id(campingRouteId);
-        log.info("Comments deleted for camping route with id {}", campingRouteId);
-
-        return ResponseEntity.noContent().build();
-    }
 }

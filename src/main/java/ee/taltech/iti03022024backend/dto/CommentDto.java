@@ -17,4 +17,7 @@ public class CommentDto {
     @Size(min = 1, max = 1000, message = "Comment must be between 1 and 1000 characters")
     @Schema(description = "Content for the camping route comment", example = "Väga äge rada")
     private String content;
+
+    @Schema(description = "ID of the comment author")
+    private long userID;
 }
