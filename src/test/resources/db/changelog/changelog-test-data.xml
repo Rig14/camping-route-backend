@@ -9,16 +9,22 @@
 
     <changeSet id="mock-data-user" author="dev">
         <insert tableName="user_data">
-            <column name="id" valueNumeric="1"/>
             <column name="username" value="user1"/>
             <column name="email" value="user.one@gmail.com"/>
             <column name="password" value="UserPassword1!"/>
         </insert>
     </changeSet>
 
+    <changeSet id="mock-data-user-2" author="dev">
+        <insert tableName="user_data">
+            <column name="username" value="user2"/>
+            <column name="email" value="user.two@gmail.com"/>
+            <column name="password" value="UserPassword2!"/>
+        </insert>
+    </changeSet>
+
     <changeSet id="mock-data-route" author="dev">
         <insert tableName="camping_route">
-            <column name="id" valueNumeric="2"/>
             <column name="name" value="Test Route"/>
             <column name="description" value="Test Description"/>
             <column name="location" value="Test Location"/>
@@ -28,11 +34,18 @@
 
     <changeSet id="mock-data-route-2" author="dev">
         <insert tableName="camping_route">
-            <column name="id" valueNumeric="3"/>
             <column name="name" value="Test Route 2"/>
             <column name="description" value="Test Description 2"/>
             <column name="location" value="Test Location 2"/>
-            <column name="user_data_id" valueNumeric="1"/>
+            <column name="user_data_id" valueNumeric="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="mock-data-comment" author="dev">
+        <insert tableName="comment">
+            <column name="content" value="Test Comment"/>
+            <column name="user_data_id" value="1"/>
+            <column name="camping_route_id" value="2"/>
         </insert>
     </changeSet>
 
