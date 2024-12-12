@@ -70,7 +70,7 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
         String token = generateToken(user);
         repository.save(user);
-        return ResponseEntity.ok(new VerificationDto(token));
+        return ResponseEntity.ok(new VerificationDto(token, user.getId()));
     }
 
     public ResponseEntity<VerificationDto> verifyUser(UserDto dto) {
@@ -85,7 +85,7 @@ public class UserService {
 
         log.info("Successful login for user: {}", dto.getUsername());
         String token = generateToken(user);
-        return ResponseEntity.ok(new VerificationDto(token));
+        return ResponseEntity.ok(new VerificationDto(token, user.getId()));
     }
 
     public ResponseEntity<UserDto> getUser(long id) {
