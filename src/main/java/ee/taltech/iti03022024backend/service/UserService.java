@@ -7,7 +7,6 @@ import ee.taltech.iti03022024backend.exception.*;
 import ee.taltech.iti03022024backend.mapping.UserMapper;
 import ee.taltech.iti03022024backend.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +28,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private UserService userService;
 
-    private final SecretKey jwtKey;
+    private final SecretKey jwtKey; // HS256
 
     private boolean isPasswordValid(String password) {
         // Password must be at least 8 characters long and contains:
@@ -70,7 +69,7 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
         String token = generateToken(user);
         repository.save(user);
-        return ResponseEntity.ok(new VerificationDto(token));
+        return ResponseEntity.ok(new VerificationDto(token, user.getId()));
     }
 
     public ResponseEntity<VerificationDto> verifyUser(UserDto dto) {
@@ -85,7 +84,7 @@ public class UserService {
 
         log.info("Successful login for user: {}", dto.getUsername());
         String token = generateToken(user);
-        return ResponseEntity.ok(new VerificationDto(token));
+        return ResponseEntity.ok(new VerificationDto(token, user.getId()));
     }
 
     public ResponseEntity<UserDto> getUser(long id) {

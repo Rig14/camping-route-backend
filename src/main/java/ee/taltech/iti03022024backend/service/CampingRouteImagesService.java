@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.Principal;
 import java.util.Comparator;
 import java.util.UUID;
 
@@ -143,8 +142,6 @@ public class CampingRouteImagesService {
                     "Invalid file path", e);
         }
     }
-
-
 
     public ResponseEntity<Void> deleteImage(String principal, long campingRouteId, String imageName) {
         validateUser(principal, campingRouteId);

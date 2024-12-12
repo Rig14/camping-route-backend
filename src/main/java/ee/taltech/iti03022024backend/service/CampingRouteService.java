@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -46,9 +45,23 @@ public class CampingRouteService {
         return ResponseEntity.ok(mapper.toDto(routeRepository.save(route)));
     }
 
-    public ResponseEntity<List<CampingRouteDto>> getCampingRoutesByUserId(long id) {
-        log.info("Fetching all camping routes with user id: {}", id);
-        return ResponseEntity.ok(mapper.toDtoList(routeRepository.findByUser_Id(id)));
+    public ResponseEntity<PageResponse<CampingRouteDto>> getCampingRoutesByUserId(CampingRouteSearchRequest searchRequest) {
+        log.info("Fetching all camping routes with user id: {}", searchRequest.getKeyword());
+
+        Specification<CampingRouteEntity> spec = Specification.where(CampingRouteSpecifications.hasUserId(Long.valueOf(searchRequest.getKeyword())));
+
+        Pageable pageable = PageRequest.of(searchRequest.getPageNumber(), searchRequest.getPageSize());
+
+        Page<CampingRouteEntity> resultPage = routeRepository.findAll(spec, pageable);
+
+        List<CampingRouteDto> dtos = resultPage.getContent()
+                .stream()
+                .map(mapper::toDto)
+                .toList();
+
+        PageResponse<CampingRouteDto> pageResponse = new PageResponse<>(dtos, resultPage.getTotalElements(), resultPage.getTotalPages());
+
+        return ResponseEntity.ok(pageResponse);
     }
 
     public ResponseEntity<CampingRouteDto> getCampingRoute(long id) {
@@ -73,6 +86,8 @@ public class CampingRouteService {
     }
 
     public ResponseEntity<PageResponse<CampingRouteDto>> getCampingRoutesForHomepage(CampingRouteSearchRequest searchRequest) {
+        log.info("Homepage search request received: " + searchRequest);
+
         Specification<CampingRouteEntity> spec = Specification.where(null);
 
         Pageable pageable = PageRequest.of(searchRequest.getPageNumber(), searchRequest.getPageSize());
@@ -88,6 +103,7 @@ public class CampingRouteService {
     }
 
     public ResponseEntity<PageResponse<CampingRouteDto>> findCampingRoute(CampingRouteSearchRequest searchRequest) {
+        log.info("Search request received: " + searchRequest);
         Specification<CampingRouteEntity> spec = Specification.where(null);
 
         if (searchRequest.getKeyword() != null && !searchRequest.getKeyword().isEmpty()) {

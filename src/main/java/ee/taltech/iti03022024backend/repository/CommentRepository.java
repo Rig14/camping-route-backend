@@ -8,5 +8,6 @@ import java.util.List;
 
 public interface CommentRepository extends JpaRepository<CommentEntity, Long> {
     List<CommentEntity> findByCampingRoute(CampingRouteEntity campingRouteEntity);
+
     List<CommentEntity> findByUser_Id(long id);
 }

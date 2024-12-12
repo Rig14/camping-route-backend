@@ -5,6 +5,8 @@ import ee.taltech.iti03022024backend.entity.CampingRouteEntity;
 import ee.taltech.iti03022024backend.entity.CommentEntity;
 import ee.taltech.iti03022024backend.entity.UserEntity;
 import ee.taltech.iti03022024backend.exception.CampingRouteNotFoundException;
+import ee.taltech.iti03022024backend.exception.CommentNotExistsException;
+import ee.taltech.iti03022024backend.exception.NotPermittedException;
 import ee.taltech.iti03022024backend.exception.UserNotFoundException;
 import ee.taltech.iti03022024backend.mapping.CommentMapper;
 import ee.taltech.iti03022024backend.repository.CampingRouteRepository;
@@ -24,6 +26,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 public class CommentService {
+    private static final String CAMPING_ROUTE_DOES_NOT_EXIST = "Camping route with id of %d does not exist";
+    private static final String USER_NOT_FOUND = "User not found with username: %s";
+
     private final CommentMapper commentMapper;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
@@ -31,10 +36,10 @@ public class CommentService {
 
     public ResponseEntity<CommentDto> createComment(String principal, CommentDto dto, long campingRouteId) {
         CampingRouteEntity campingRoute = campingRouteRepository.findById(campingRouteId)
-                .orElseThrow(() -> new CampingRouteNotFoundException("Camping route with id of " + campingRouteId + " does not exist"));
+                .orElseThrow(() -> new CampingRouteNotFoundException(String.format(CAMPING_ROUTE_DOES_NOT_EXIST, campingRouteId)));
 
         UserEntity user = userRepository.findByUsername(principal)
-                .orElseThrow(() -> new UserNotFoundException("User not found with username: " + principal));
+                .orElseThrow(() -> new UserNotFoundException(String.format(USER_NOT_FOUND, principal)));
 
         CommentEntity commentEntity = commentMapper.toEntity(dto);
         commentEntity.setCampingRoute(campingRoute);
@@ -69,6 +74,21 @@ public class CommentService {
         log.info("Fetching camping route with id of {}", id);
 
         return campingRouteRepository.findById(id)
-                .orElseThrow(() -> new CampingRouteNotFoundException("Camping route with id of " + id + " does not exist"));
+                .orElseThrow(() -> new CampingRouteNotFoundException(String.format(CAMPING_ROUTE_DOES_NOT_EXIST, id)));
+    }
+
+    public ResponseEntity<Void> deleteCommentByCommentId(String name, long commentId) {
+        log.info("Deleting comment with id {}", commentId);
+
+        var comment = commentRepository.findById(commentId).orElseThrow(() -> new CommentNotExistsException("Comment with id of " + commentId + " does not exist"));
+        var user = userRepository.findByUsername(name).orElseThrow(() -> new UserNotFoundException(String.format(USER_NOT_FOUND, name)));
+
+        if (!comment.getUser().equals(user)) {
+            throw new UserNotFoundException("User does not have permission to delete comment with id of " + commentId);
+        }
+
+        commentRepository.deleteById(commentId);
+        log.info("Comment with id {} deleted", commentId);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -6,7 +6,8 @@ import lombok.Setter;
 
 import java.util.List;
 
-@Getter @Setter
+@Getter
+@Setter
 @Entity
 @Table(name = "camping_route")
 public class CampingRouteEntity {
@@ -19,8 +20,12 @@ public class CampingRouteEntity {
     private String thumbnailUrl;
 
     @ManyToOne
+    @JoinColumn(name = "user_data_id")
     private UserEntity user;
 
-    @OneToMany
+    @OneToMany(mappedBy = "campingRoute", cascade = CascadeType.ALL)
     private List<CommentEntity> comment; // one CampingRoute can have many comments
+
+    @OneToMany(mappedBy = "campingRoute", cascade = CascadeType.ALL)
+    private List<ViewEntity> views;
 }

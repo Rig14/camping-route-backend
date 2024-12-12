@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -78,7 +77,7 @@ public class UserController {
             ))
     @GetMapping("/public/user/{id}")
     public ResponseEntity<UserDto> getUser(
-            @PathVariable @Min(value = 1, message = "User ID must be positive") long id) {
+            @PathVariable long id) {
         return service.getUser(id);
     }
 
@@ -100,7 +99,7 @@ public class UserController {
     @DeleteMapping("/user/{id}")
     public ResponseEntity<Void> deleteUser(
             Principal principal,
-            @PathVariable @Min(value = 1, message = "User ID must be positive") long id) {
+            @PathVariable long id) {
         return service.deleteUser(principal.getName(), id);
     }
 }

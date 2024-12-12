@@ -1,25 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="
-       http://www.liquibase.org/xml/ns/dbchangelog
-       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
 
-    <!-- Include your main changelog file -->
     <include file="/db/changelog/changelog-master.xml"/>
 
     <changeSet id="mock-data-user" author="dev">
-        <insert tableName="user_entity">
-            <column name="id" valueNumeric="1"/>
-            <column name="username" value="user"/>
+        <insert tableName="user_data">
+            <column name="username" value="user1"/>
+            <column name="email" value="user.one@gmail.com"/>
+            <column name="password" value="UserPassword1!"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="mock-data-user-2" author="dev">
+        <insert tableName="user_data">
+            <column name="username" value="user2"/>
+            <column name="email" value="user.two@gmail.com"/>
+            <column name="password" value="UserPassword2!"/>
         </insert>
     </changeSet>
 
     <changeSet id="mock-data-route" author="dev">
-        <insert tableName="camping_route_entity">
-            <column name="id" valueNumeric="1"/>
-            <column name="user_id" valueNumeric="1"/>
+        <insert tableName="camping_route">
             <column name="name" value="Test Route"/>
+            <column name="description" value="Test Description"/>
+            <column name="location" value="Test Location"/>
+            <column name="user_data_id" valueNumeric="1"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="mock-data-route-2" author="dev">
+        <insert tableName="camping_route">
+            <column name="name" value="Test Route 2"/>
+            <column name="description" value="Test Description 2"/>
+            <column name="location" value="Test Location 2"/>
+            <column name="user_data_id" valueNumeric="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="mock-data-comment" author="dev">
+        <insert tableName="comment">
+            <column name="content" value="Test Comment"/>
+            <column name="user_data_id" value="1"/>
+            <column name="camping_route_id" value="2"/>
         </insert>
     </changeSet>
 
