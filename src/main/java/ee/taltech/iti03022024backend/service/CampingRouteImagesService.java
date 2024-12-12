@@ -144,6 +144,8 @@ public class CampingRouteImagesService {
         }
     }
 
+
+
     public ResponseEntity<Void> deleteImage(String principal, long campingRouteId, String imageName) {
         validateUser(principal, campingRouteId);
 

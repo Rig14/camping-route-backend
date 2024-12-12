@@ -9,7 +9,6 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface CampingRouteMapper {
-    @Mapping(target = "userID", source = "user.id")
     CampingRouteDto toDto(CampingRouteEntity entity);
 
     @Mapping(target = "id", ignore = true)

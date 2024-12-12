@@ -79,14 +79,6 @@ public class DefaultExceptionHandler {
                 .body(new ExceptionResponse(message));
     }
 
-    @ExceptionHandler(CommentNotExistsException.class)
-    public ResponseEntity<ExceptionResponse> handleCommentNotExistsException(CommentNotExistsException e) {
-        log.warn("Comment does not exist: {}", e.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(new ExceptionResponse(e.getMessage()));
-    }
-
     @ExceptionHandler(Exception.class)
     public void exception(Exception e) {
         log.error("An exception occurred.", e);

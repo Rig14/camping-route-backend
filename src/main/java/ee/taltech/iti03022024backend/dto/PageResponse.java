@@ -1,19 +1,20 @@
 package ee.taltech.iti03022024backend.dto;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
-@RequiredArgsConstructor
-@Schema(description = "Data Transfer Object for page response")
-public class PageResponse<T> {
-    @Schema(description = "Camping route DTO-s list", example = "[<CampingRouteDTO_1>, <CampingRouteDTO_2>]")
-    private final List<T> content;
-    @Schema(description = "Total elements form the query response", example = "65")
-    private final long totalElements;
-    @Schema(description = "Total pages form the query response", example = "4")
-    private final int totalPages;
+@NoArgsConstructor
+public class PageResponse<CampingRouteDto> {
+    private List<CampingRouteDto> content;
+    private long totalElements;
+    private int totalPages;
+
+    public PageResponse(List<CampingRouteDto> content, long totalElements, int totalPages) {
+        this.content = content;
+        this.totalElements = totalElements;
+        this.totalPages = totalPages;
+    }
 }

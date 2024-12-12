@@ -6,8 +6,7 @@ import lombok.Setter;
 
 import java.util.List;
 
-@Getter
-@Setter
+@Getter @Setter
 @Entity
 @Table(name = "user_data")
 public class UserEntity {
@@ -18,9 +17,9 @@ public class UserEntity {
     private String email;
     private String password;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany
     private List<CampingRouteEntity> campingRoutes;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany
     private List<CommentEntity> comments;
 }

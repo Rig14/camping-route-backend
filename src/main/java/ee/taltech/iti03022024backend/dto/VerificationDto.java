@@ -10,6 +10,4 @@ import lombok.RequiredArgsConstructor;
 public class VerificationDto {
     @Schema(description = "Authentication token", example = "<some hash>")
     private final String token;
-    @Schema(description = "ID of the user", example = "0")
-    private final long userId;
 }

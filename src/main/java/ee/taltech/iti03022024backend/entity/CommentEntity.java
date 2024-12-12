@@ -14,10 +14,8 @@ public class CommentEntity {
     private String content;
 
     @ManyToOne
-    @JoinColumn(name = "user_data_id")
     private UserEntity user;
 
     @ManyToOne
-    @JoinColumn(name = "camping_route_id")
     private CampingRouteEntity campingRoute;
 }

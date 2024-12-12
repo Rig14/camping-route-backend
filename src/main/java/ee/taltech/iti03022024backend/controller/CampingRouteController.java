@@ -12,11 +12,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -47,23 +51,18 @@ public class CampingRouteController {
         return service.createCampingRoute(principal.getName(), dto);
     }
 
-    @Operation(
-            summary = "Search camping route",
-            description = "Search camping route from the system based on provided information"
-    )
-    @ApiResponse(responseCode = "200", description = "Found camping route successfully from the system")
     @PostMapping("/public/camping_routes/search")
-    public ResponseEntity<PageResponse<CampingRouteDto>> searchCampingRoutes(@Valid @RequestBody CampingRouteSearchRequest searchRequest) {
+    public ResponseEntity<PageResponse<CampingRouteDto>> searchCampingRoutes(@RequestBody CampingRouteSearchRequest searchRequest) {
         return service.findCampingRoute(searchRequest);
     }
 
     @Operation(
             summary = "Get camping routes",
-            description = "Get camping routes from the system based on provided information"
+            description = "Get camping routes by name, location, username or get all if criteria is not provided"
     )
-    @ApiResponse(responseCode = "200", description = "Camping routes successfully found by given criteria")
+    @ApiResponse(responseCode = "200", description = "Camping routes successfuly found by given criteria")
     @PostMapping("/public/camping_routes")
-    public ResponseEntity<PageResponse<CampingRouteDto>> getCampingRoutes(@Valid @RequestBody CampingRouteSearchRequest searchRequest) {
+    public ResponseEntity<PageResponse<CampingRouteDto>> getCampingRoutes(@RequestBody CampingRouteSearchRequest searchRequest) {
         return service.getCampingRoutesForHomepage(searchRequest);
     }
 
@@ -72,9 +71,10 @@ public class CampingRouteController {
             description = "Get camping routes from the system based on the given user ID"
     )
     @ApiResponse(responseCode = "200", description = "Camping routes successfully found by user ID")
-    @PostMapping("/public/camping_routes/user")
-    public ResponseEntity<PageResponse<CampingRouteDto>> getCampingRoutesByUserId(@Valid @RequestBody CampingRouteSearchRequest searchRequest) {
-        return service.getCampingRoutesByUserId(searchRequest);
+    @GetMapping("/public/camping_routes/user/{userId}")
+    public ResponseEntity<List<CampingRouteDto>> getCampingRoutesByUserId(
+            @PathVariable @Min(value = 1, message = "User ID must be positive") long userId) {
+        return service.getCampingRoutesByUserId(userId);
     }
 
     @Operation(
@@ -88,7 +88,8 @@ public class CampingRouteController {
                     examples = @ExampleObject(value = "{\"message\": \"Camping route with id of 0 does not exist\"}")
             ))
     @GetMapping("/public/camping_routes/{id}")
-    public ResponseEntity<CampingRouteDto> getCampingRoute(@PathVariable long id) {
+    public ResponseEntity<CampingRouteDto> getCampingRoute(
+            @PathVariable @Min(value = 1, message = "ID must be positive") long id) {
         return service.getCampingRoute(id);
     }
 
@@ -112,7 +113,7 @@ public class CampingRouteController {
     @DeleteMapping("/camping_routes/{id}")
     public ResponseEntity<Void> deleteCampingRoute(
             Principal principal,
-            @PathVariable long id) {
+            @PathVariable @Min(value = 1, message = "ID must be positive") long id) {
         return service.deleteCampingRoute(principal.getName(), id);
     }
 }

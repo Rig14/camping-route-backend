@@ -30,7 +30,4 @@ public class CampingRouteDto {
     @Schema(description = "Thumbnail URL of the camping route",
             example = "https://media.voog.com/0000/0030/9870/photos/viru_raba_loodusrada_1_medium.jpg")
     private String thumbnailUrl;
-
-    @Schema(description = "ID of Camping Route author")
-    private long userID;
 }
