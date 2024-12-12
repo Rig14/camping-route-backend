@@ -76,21 +76,27 @@ class CampingRouteServiceTest {
     @Test
     void getCampingRoutesByUserId_shouldReturnListOfRoutes() {
         // given
-        long userId = 1L;
+        CampingRouteSearchRequest searchRequest = new CampingRouteSearchRequest();
+        searchRequest.setKeyword("1"); // userId as a string
+        searchRequest.setPageNumber(0);
+        searchRequest.setPageSize(10);
+
         List<CampingRouteEntity> routes = new ArrayList<>();
         CampingRouteEntity route = new CampingRouteEntity();
         routes.add(route);
 
-        when(routeRepository.findByUser_Id(userId)).thenReturn(routes);
-        when(mapper.toDtoList(routes)).thenReturn(Collections.singletonList(new CampingRouteDto()));
+        Page<CampingRouteEntity> page = new PageImpl<>(routes, PageRequest.of(0, 10), routes.size());
+
+        when(routeRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(page);
+        when(mapper.toDto(route)).thenReturn(new CampingRouteDto());
 
         // when
-        ResponseEntity<List<CampingRouteDto>> response = campingRouteService.getCampingRoutesByUserId(userId);
+        ResponseEntity<PageResponse<CampingRouteDto>> response = campingRouteService.getCampingRoutesByUserId(searchRequest);
 
         // then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).hasSize(1);
-        verify(routeRepository, times(1)).findByUser_Id(userId);
+        assertThat(response.getBody()).isNotNull();
+        verify(routeRepository, times(1)).findAll(any(Specification.class), any(Pageable.class));
     }
 
     @Test
