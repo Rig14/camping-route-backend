@@ -7,7 +7,6 @@ import ee.taltech.iti03022024backend.exception.*;
 import ee.taltech.iti03022024backend.mapping.UserMapper;
 import ee.taltech.iti03022024backend.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +26,7 @@ public class UserService {
     private final UserMapper mapper;
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
-    private UserService userService;
+    private UserService mockUserService;
 
     private final SecretKey jwtKey; // HS256
 
@@ -50,7 +49,7 @@ public class UserService {
                 ))
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
-                .signWith(jwtKey, SignatureAlgorithm.HS256) // this will ensure that the SignatureAlgorithm is HS256
+                .signWith(jwtKey) // this will ensure that the SignatureAlgorithm is HS256
                 .compact();
     }
 

@@ -9,7 +9,7 @@ public class CampingRouteSpecifications {
 
     public static Specification<CampingRouteEntity> hasUserId(Long userId) {
         return (root, query, criteriaBuilder) ->
-            criteriaBuilder.equal(root.get("user").get("id"), userId);
+                criteriaBuilder.equal(root.get("user").get("id"), userId);
     }
 
     public static Specification<CampingRouteEntity> hasKeyword(String keyword) {
