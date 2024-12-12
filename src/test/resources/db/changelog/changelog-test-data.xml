@@ -18,7 +18,7 @@
 
     <changeSet id="mock-data-route" author="dev">
         <insert tableName="camping_route">
-            <column name="id" valueNumeric="1"/>
+            <column name="id" valueNumeric="2"/>
             <column name="name" value="Test Route"/>
             <column name="description" value="Test Description"/>
             <column name="location" value="Test Location"/>
@@ -28,7 +28,7 @@
 
     <changeSet id="mock-data-route-2" author="dev">
         <insert tableName="camping_route">
-            <column name="id" valueNumeric="2"/>
+            <column name="id" valueNumeric="3"/>
             <column name="name" value="Test Route 2"/>
             <column name="description" value="Test Description 2"/>
             <column name="location" value="Test Location 2"/>

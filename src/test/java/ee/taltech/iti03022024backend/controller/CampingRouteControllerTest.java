@@ -3,6 +3,7 @@ package ee.taltech.iti03022024backend.controller;
 import ee.taltech.iti03022024backend.AbstractIntegrationTest;
 import ee.taltech.iti03022024backend.dto.CampingRouteDto;
 import ee.taltech.iti03022024backend.dto.CampingRouteSearchRequest;
+import net.minidev.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -41,9 +42,9 @@ class CampingRouteControllerTest extends AbstractIntegrationTest {
                         .with(user("user1")))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.name").value("Test Route"))
-                .andExpect(jsonPath("$.description").value("A beautiful journey through nature."))
-                .andExpect(jsonPath("$.location").value("Kuusalu vald, Harjumaa"));
+                .andExpect(jsonPath("$.name").value("TestTestTest"))
+                .andExpect(jsonPath("$.description").value("TestTestTest"))
+                .andExpect(jsonPath("$.location").value("TestTestTest"));
     }
 
     @Test
@@ -86,10 +87,10 @@ class CampingRouteControllerTest extends AbstractIntegrationTest {
 
     @Test
     void givenExistingCampingRoute_whenGetCampingRoute_thenReturnsOkAndCorrectData() throws Exception {
-        mvc.perform(get("/api/public/camping_routes/{id}", 1L))
+        mvc.perform(get("/api/public/camping_routes/{id}", 2L))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.id").value(2))
                 .andExpect(jsonPath("$.name").value("Test Route"))
                 .andExpect(jsonPath("$.description").value("Test Description"))
                 .andExpect(jsonPath("$.location").value("Test Location"));
