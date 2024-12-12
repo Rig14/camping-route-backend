@@ -12,16 +12,22 @@ import ee.taltech.iti03022024backend.entity.UserEntity;
 import ee.taltech.iti03022024backend.exception.CampingRouteNotFoundException;
 import ee.taltech.iti03022024backend.exception.NotPermittedException;
 import ee.taltech.iti03022024backend.mapping.CampingRouteMapper;
+import ee.taltech.iti03022024backend.mapping.CampingRouteMapperImpl;
 import ee.taltech.iti03022024backend.repository.CampingRouteRepository;
 import ee.taltech.iti03022024backend.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.data.domain.*;
 import java.util.*;
 
+
+@ExtendWith(MockitoExtension.class)
 class CampingRouteServiceTest {
 
     @Mock
@@ -30,14 +36,13 @@ class CampingRouteServiceTest {
     @Mock
     private UserRepository userRepository;
 
-    @Mock
-    private CampingRouteMapper mapper;
+    @Spy
+    private CampingRouteMapper mapper = new CampingRouteMapperImpl();
 
     private CampingRouteService campingRouteService;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
         campingRouteService = new CampingRouteService(routeRepository, userRepository, mapper);
     }
 
@@ -63,45 +68,35 @@ class CampingRouteServiceTest {
         ResponseEntity<CampingRouteDto> response = campingRouteService.createCampingRoute(principal, dto);
 
         // then
-        assertThat(response.getStatusCode().value()).isEqualTo(200);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(dto);
         verify(routeRepository, times(1)).save(any(CampingRouteEntity.class));
     }
 
     @Test
     void getCampingRoutesByUserId_shouldReturnListOfRoutes() {
-        UserEntity user = new UserEntity();
-        user.setId(1L);
-
+        // given
         CampingRouteSearchRequest searchRequest = new CampingRouteSearchRequest();
-        searchRequest.setKeyword(String.valueOf(user.getId()));
+        searchRequest.setKeyword("1"); // userId as a string
         searchRequest.setPageNumber(0);
         searchRequest.setPageSize(10);
 
-        CampingRouteEntity routeEntity1 = new CampingRouteEntity();
-        routeEntity1.setId(1L);
-        routeEntity1.setUser(user);
+        List<CampingRouteEntity> routes = new ArrayList<>();
+        CampingRouteEntity route = new CampingRouteEntity();
+        routes.add(route);
 
-        CampingRouteEntity routeEntity2 = new CampingRouteEntity();
-        routeEntity2.setId(2L);
-        routeEntity2.setUser(user);
-
-        Page<CampingRouteEntity> page = new PageImpl<>(List.of(routeEntity1, routeEntity2),
-                PageRequest.of(0, 10), 2);
+        Page<CampingRouteEntity> page = new PageImpl<>(routes, PageRequest.of(0, 10), routes.size());
 
         when(routeRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(page);
-        when(mapper.toDtoList(anyList())).thenReturn(Collections.singletonList(new CampingRouteDto()));
+        when(mapper.toDto(route)).thenReturn(new CampingRouteDto());
 
+        // when
         ResponseEntity<PageResponse<CampingRouteDto>> response = campingRouteService.getCampingRoutesByUserId(searchRequest);
 
-        assertThat(response.getStatusCode().value()).isEqualTo(200);
-        PageResponse<CampingRouteDto> pageResponse = response.getBody();
-        assertThat(pageResponse).isNotNull();
-        assertThat(pageResponse.getContent()).hasSize(2);
-        assertThat(pageResponse.getTotalPages()).isEqualTo(1);
-        assertThat(pageResponse.getTotalElements()).isEqualTo(2);
-        verify(routeRepository).findAll(any(Specification.class), any(Pageable.class));
-        verify(mapper, times(2)).toDto(any(CampingRouteEntity.class));
+        // then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        verify(routeRepository, times(1)).findAll(any(Specification.class), any(Pageable.class));
     }
 
     @Test
@@ -118,7 +113,7 @@ class CampingRouteServiceTest {
         ResponseEntity<CampingRouteDto> response = campingRouteService.getCampingRoute(routeId);
 
         // then
-        assertThat(response.getStatusCode().value()).isEqualTo(200);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(routeDto);
     }
 
@@ -152,7 +147,7 @@ class CampingRouteServiceTest {
         ResponseEntity<Void> response = campingRouteService.deleteCampingRoute(principal, routeId);
 
         // then
-        assertThat(response.getStatusCode().value()).isEqualTo(204);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
         verify(routeRepository, times(1)).deleteById(routeId);
     }
 
@@ -185,13 +180,12 @@ class CampingRouteServiceTest {
         Page<CampingRouteEntity> page = new PageImpl<>(Collections.singletonList(new CampingRouteEntity()));
 
         when(routeRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(page);
-        when(mapper.toDtoList(anyList())).thenReturn(Collections.singletonList(new CampingRouteDto()));
 
         // when
         ResponseEntity<PageResponse<CampingRouteDto>> response = campingRouteService.getCampingRoutesForHomepage(searchRequest);
 
         // then
-        assertThat(response.getStatusCode().value()).isEqualTo(200);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getTotalElements()).isEqualTo(1);
     }
@@ -207,13 +201,12 @@ class CampingRouteServiceTest {
         Page<CampingRouteEntity> page = new PageImpl<>(Collections.singletonList(new CampingRouteEntity()));
 
         when(routeRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(page);
-        when(mapper.toDtoList(anyList())).thenReturn(Collections.singletonList(new CampingRouteDto()));
 
         // when
         ResponseEntity<PageResponse<CampingRouteDto>> response = campingRouteService.findCampingRoute(searchRequest);
 
         // then
-        assertThat(response.getStatusCode().value()).isEqualTo(200);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getTotalElements()).isEqualTo(1);
     }

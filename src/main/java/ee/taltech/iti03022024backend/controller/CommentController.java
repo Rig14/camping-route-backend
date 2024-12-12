@@ -1,6 +1,5 @@
 package ee.taltech.iti03022024backend.controller;
 
-
 import ee.taltech.iti03022024backend.dto.CommentDto;
 import ee.taltech.iti03022024backend.exception.ExceptionResponse;
 import ee.taltech.iti03022024backend.service.CommentService;

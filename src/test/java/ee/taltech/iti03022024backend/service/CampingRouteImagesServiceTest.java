@@ -15,9 +15,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.List;
@@ -37,7 +39,6 @@ class CampingRouteImagesServiceTest {
     @Captor
     private ArgumentCaptor<CampingRouteEntity> routeCaptor;
 
-    // We will use a temporary directory to test file operations
     @TempDir
     Path tempDir;
 
@@ -45,12 +46,10 @@ class CampingRouteImagesServiceTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        // Set up a temporary directory as our rootDir
+        // Set up rootDir for file operations only
         Path rootDir = tempDir.resolve("files").resolve("camping_route_images");
         Files.createDirectories(rootDir);
 
-        // We need to inject this rootDir into the service since the code given uses a final field.
-        // We'll do this via reflection since the code snippet is final and not modifiable.
         service = new CampingRouteImagesService(campingRouteRepository);
         var rootDirField = CampingRouteImagesService.class.getDeclaredField("rootDir");
         rootDirField.setAccessible(true);
@@ -66,10 +65,18 @@ class CampingRouteImagesServiceTest {
         return route;
     }
 
+    @Test
+    void givenNonExistingImage_whenGetImage_thenThrowCampingRouteImageNotFound() {
+        long campingRouteId = 1L;
+        String imageName = "nonexistent.jpg";
+
+        assertThrows(CampingRouteImageNotFound.class, () -> {
+            service.getImage(campingRouteId, imageName);
+        });
+    }
 
     @Test
-    void givenEmptyFile_whenStoreImages_thenThrowCampingRouteImageStorageException() throws IOException {
-        // given
+    void givenEmptyFile_whenStoreImages_thenThrowCampingRouteImageStorageException() {
         long routeId = 1L;
         String principal = "validUser";
         CampingRouteEntity route = mockRouteEntity(principal, routeId);
@@ -80,7 +87,6 @@ class CampingRouteImagesServiceTest {
 
         MultipartFile[] files = new MultipartFile[]{multipartFile};
 
-        // when / then
         assertThrows(CampingRouteImageStorageException.class, () -> {
             service.storeImages(principal, files, routeId);
         });
@@ -88,14 +94,12 @@ class CampingRouteImagesServiceTest {
 
     @Test
     void givenNonExistingRoute_whenStoreImages_thenThrowCampingRouteNotFoundException() {
-        // given
         long routeId = 999L;
         String principal = "validUser";
         when(campingRouteRepository.findById(routeId)).thenReturn(Optional.empty());
 
         MultipartFile[] files = new MultipartFile[]{multipartFile};
 
-        // when / then
         assertThrows(CampingRouteNotFoundException.class, () -> {
             service.storeImages(principal, files, routeId);
         });
@@ -103,34 +107,119 @@ class CampingRouteImagesServiceTest {
 
     @Test
     void givenUnauthorizedUser_whenStoreImages_thenThrowNotPermittedException() {
-        // given
         long routeId = 1L;
         CampingRouteEntity route = mockRouteEntity("owner", routeId);
         when(campingRouteRepository.findById(routeId)).thenReturn(Optional.of(route));
 
         MultipartFile[] files = new MultipartFile[]{multipartFile};
 
-        // when / then
         assertThrows(NotPermittedException.class, () -> {
             service.storeImages("otherUser", files, routeId);
         });
     }
 
+    @Test
+    void givenFileWithoutExtension_whenStoreImages_thenFileStoredSuccessfully() throws IOException {
+        long routeId = 2L;
+        String principal = "validUser";
+        CampingRouteEntity route = mockRouteEntity(principal, routeId);
+        when(campingRouteRepository.findById(routeId)).thenReturn(Optional.of(route));
+
+        MultipartFile file = mock(MultipartFile.class);
+        when(file.isEmpty()).thenReturn(false);
+        when(file.getOriginalFilename()).thenReturn("filewithoutdot");
+        when(file.getInputStream()).thenReturn(new ByteArrayInputStream("file content".getBytes()));
+
+        MultipartFile[] files = new MultipartFile[]{file};
+
+        service.storeImages(principal, files, routeId);
+
+        Path routeDir = tempDir.resolve("files").resolve("camping_route_images").resolve(String.valueOf(routeId));
+        assertTrue(Files.exists(routeDir));
+        assertTrue(Files.list(routeDir).findFirst().isPresent());
+    }
+
+    @Test
+    void givenIOException_whenStoreImages_thenThrowCampingRouteImageStorageException() throws IOException {
+        long routeId = 3L;
+        String principal = "validUser";
+        CampingRouteEntity route = mockRouteEntity(principal, routeId);
+        when(campingRouteRepository.findById(routeId)).thenReturn(Optional.of(route));
+
+        MultipartFile file = mock(MultipartFile.class);
+        when(file.isEmpty()).thenReturn(false);
+        when(file.getOriginalFilename()).thenReturn("image.png");
+        when(file.getInputStream()).thenThrow(new IOException("Simulated IO error"));
+
+        MultipartFile[] files = new MultipartFile[]{file};
+
+        assertThrows(CampingRouteImageStorageException.class, () -> {
+            service.storeImages(principal, files, routeId);
+        });
+    }
+
+    @Test
+    void givenValidFiles_whenStoreImages_thenFilesStoredSuccessfully() throws IOException {
+        long routeId = 1L;
+        String principal = "validUser";
+        CampingRouteEntity route = mockRouteEntity(principal, routeId);
+        when(campingRouteRepository.findById(routeId)).thenReturn(Optional.of(route));
+
+        MultipartFile file1 = mock(MultipartFile.class);
+        MultipartFile file2 = mock(MultipartFile.class);
+
+        when(file1.isEmpty()).thenReturn(false);
+        when(file1.getOriginalFilename()).thenReturn("image1.png");
+        when(file1.getInputStream()).thenReturn(new ByteArrayInputStream("file content".getBytes()));
+
+        when(file2.isEmpty()).thenReturn(false);
+        when(file2.getOriginalFilename()).thenReturn("image2.jpg");
+        when(file2.getInputStream()).thenReturn(new ByteArrayInputStream("file content".getBytes()));
+
+        MultipartFile[] files = new MultipartFile[]{file1, file2};
+
+        service.storeImages(principal, files, routeId);
+
+        Path routeDir = tempDir.resolve("files").resolve("camping_route_images").resolve(String.valueOf(routeId));
+        assertTrue(Files.exists(routeDir));
+        assertEquals(2, Files.list(routeDir).count());
+    }
+
+    @Test
+    void givenNonExistingDirectory_whenStoreImages_thenDirectoryCreated() throws IOException {
+        long routeId = 1L;
+        String principal = "validUser";
+        CampingRouteEntity route = mockRouteEntity(principal, routeId);
+        when(campingRouteRepository.findById(routeId)).thenReturn(Optional.of(route));
+
+        MultipartFile file = mock(MultipartFile.class);
+        when(file.isEmpty()).thenReturn(false);
+        when(file.getOriginalFilename()).thenReturn("image.png");
+        when(file.getInputStream()).thenReturn(new ByteArrayInputStream("file content".getBytes()));
+
+        MultipartFile[] files = new MultipartFile[]{file};
+
+        Path routeDir = tempDir.resolve("files").resolve("camping_route_images").resolve(String.valueOf(routeId));
+        assertFalse(Files.exists(routeDir));
+
+        service.storeImages(principal, files, routeId);
+
+        assertTrue(Files.exists(routeDir));
+    }
 
     @Test
     void givenExistingDirectoryWithFiles_whenGetImageNames_thenReturnListOfFiles() throws IOException {
-        // given
         long routeId = 2L;
         Path routeDir = tempDir.resolve("files").resolve("camping_route_images").resolve(String.valueOf(routeId));
         Files.createDirectories(routeDir);
         Files.createFile(routeDir.resolve("image1.png"));
         Files.createFile(routeDir.resolve("image2.jpg"));
 
-        // when
+        // Note: getImageNames does not require user validation, so no stubbing needed.
+
         ResponseEntity<CampingRouteImageNamesDto> response = service.getImageNames(routeId);
 
-        // then
-        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
         CampingRouteImageNamesDto dto = response.getBody();
         assertNotNull(dto);
         List<String> imageNames = dto.getImageNames();
@@ -141,31 +230,23 @@ class CampingRouteImagesServiceTest {
 
     @Test
     void givenNonExistingDirectory_whenGetImageNames_thenThrowCampingRouteImageNotFound() {
-        // given
         long routeId = 3L;
-        // no directory created
-
-        // when / then
         assertThrows(CampingRouteImageNotFound.class, () -> {
             service.getImageNames(routeId);
         });
     }
 
-
     @Test
     void givenExistingFile_whenGetImage_thenReturnResource() throws IOException {
-        // given
         long routeId = 4L;
         String imageName = "image.png";
         Path routeDir = tempDir.resolve("files").resolve("camping_route_images").resolve(String.valueOf(routeId));
         Files.createDirectories(routeDir);
         Files.write(routeDir.resolve(imageName), "test".getBytes());
 
-        // when
         ResponseEntity<Resource> response = service.getImage(routeId, imageName);
 
-        // then
-        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
         Resource resource = response.getBody();
         assertNotNull(resource);
         assertTrue(resource.exists());
@@ -173,21 +254,15 @@ class CampingRouteImagesServiceTest {
 
     @Test
     void givenNonExistingFile_whenGetImage_thenThrowCampingRouteImageNotFound() {
-        // given
         long routeId = 5L;
         String imageName = "no_such_image.png";
-        // no file created
-
-        // when / then
         assertThrows(CampingRouteImageNotFound.class, () -> {
             service.getImage(routeId, imageName);
         });
     }
 
-
     @Test
     void givenAuthorizedUserAndExistingFile_whenDeleteImage_thenFileDeleted() throws IOException {
-        // given
         long routeId = 6L;
         String principal = "owner";
         CampingRouteEntity route = mockRouteEntity(principal, routeId);
@@ -198,26 +273,21 @@ class CampingRouteImagesServiceTest {
         Files.createDirectories(routeDir);
         Files.createFile(routeDir.resolve(imageName));
 
-        // when
         ResponseEntity<Void> response = service.deleteImage(principal, routeId, imageName);
 
-        // then
-        assertEquals(204, response.getStatusCodeValue());
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
         assertFalse(Files.exists(routeDir.resolve(imageName)));
     }
 
     @Test
     void givenAuthorizedUserAndNonExistingFile_whenDeleteImage_thenThrowCampingRouteImageNotFound() {
-        // given
         long routeId = 7L;
         String principal = "owner";
         CampingRouteEntity route = mockRouteEntity(principal, routeId);
         when(campingRouteRepository.findById(routeId)).thenReturn(Optional.of(route));
 
         String imageName = "nonexistent.png";
-        // no file created
 
-        // when / then
         assertThrows(CampingRouteImageNotFound.class, () -> {
             service.deleteImage(principal, routeId, imageName);
         });
@@ -225,7 +295,6 @@ class CampingRouteImagesServiceTest {
 
     @Test
     void givenUnauthorizedUser_whenDeleteImage_thenThrowNotPermittedException() throws IOException {
-        // given
         long routeId = 8L;
         CampingRouteEntity route = mockRouteEntity("owner", routeId);
         when(campingRouteRepository.findById(routeId)).thenReturn(Optional.of(route));
@@ -235,7 +304,6 @@ class CampingRouteImagesServiceTest {
         Files.createDirectories(routeDir);
         Files.createFile(routeDir.resolve(imageName));
 
-        // when / then
         assertThrows(NotPermittedException.class, () -> {
             service.deleteImage("otherUser", routeId, imageName);
         });
@@ -243,21 +311,17 @@ class CampingRouteImagesServiceTest {
 
     @Test
     void givenNonExistingRoute_whenDeleteImage_thenThrowCampingRouteNotFoundException() {
-        // given
         long routeId = 999L;
         String principal = "someUser";
         when(campingRouteRepository.findById(routeId)).thenReturn(Optional.empty());
 
-        // when / then
         assertThrows(CampingRouteNotFoundException.class, () -> {
             service.deleteImage(principal, routeId, "whatever.png");
         });
     }
 
-
     @Test
     void givenAuthorizedUserAndExistingDirectory_whenDeleteAllImages_thenAllDeleted() throws IOException {
-        // given
         long routeId = 10L;
         String principal = "owner";
         CampingRouteEntity route = mockRouteEntity(principal, routeId);
@@ -268,25 +332,19 @@ class CampingRouteImagesServiceTest {
         Files.createFile(routeDir.resolve("img1.png"));
         Files.createFile(routeDir.resolve("img2.png"));
 
-        // when
         ResponseEntity<Void> response = service.deleteAllImage(principal, routeId);
 
-        // then
-        assertEquals(204, response.getStatusCodeValue());
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
         assertFalse(Files.exists(routeDir));
     }
 
     @Test
     void givenAuthorizedUserAndNonExistingDirectory_whenDeleteAllImages_thenThrowCampingRouteImageNotFound() {
-        // given
         long routeId = 11L;
         String principal = "owner";
         CampingRouteEntity route = mockRouteEntity(principal, routeId);
         when(campingRouteRepository.findById(routeId)).thenReturn(Optional.of(route));
 
-        // no directory created
-
-        // when / then
         assertThrows(CampingRouteImageNotFound.class, () -> {
             service.deleteAllImage(principal, routeId);
         });
@@ -294,7 +352,6 @@ class CampingRouteImagesServiceTest {
 
     @Test
     void givenUnauthorizedUser_whenDeleteAllImages_thenThrowNotPermittedException() throws IOException {
-        // given
         long routeId = 12L;
         CampingRouteEntity route = mockRouteEntity("owner", routeId);
         when(campingRouteRepository.findById(routeId)).thenReturn(Optional.of(route));
@@ -303,7 +360,6 @@ class CampingRouteImagesServiceTest {
         Files.createDirectories(routeDir);
         Files.createFile(routeDir.resolve("img.png"));
 
-        // when / then
         assertThrows(NotPermittedException.class, () -> {
             service.deleteAllImage("otherUser", routeId);
         });
@@ -311,12 +367,10 @@ class CampingRouteImagesServiceTest {
 
     @Test
     void givenNonExistingRoute_whenDeleteAllImages_thenThrowCampingRouteNotFoundException() {
-        // given
         long routeId = 999L;
         String principal = "someone";
         when(campingRouteRepository.findById(routeId)).thenReturn(Optional.empty());
 
-        // when / then
         assertThrows(CampingRouteNotFoundException.class, () -> {
             service.deleteAllImage(principal, routeId);
         });

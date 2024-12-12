@@ -8,17 +8,21 @@ import ee.taltech.iti03022024backend.entity.CampingRouteEntity;
 import ee.taltech.iti03022024backend.entity.CommentEntity;
 import ee.taltech.iti03022024backend.entity.UserEntity;
 import ee.taltech.iti03022024backend.exception.CampingRouteNotFoundException;
-import ee.taltech.iti03022024backend.exception.UserNotFoundException;
 import ee.taltech.iti03022024backend.mapping.CommentMapper;
 import ee.taltech.iti03022024backend.repository.CampingRouteRepository;
 import ee.taltech.iti03022024backend.repository.CommentRepository;
 import ee.taltech.iti03022024backend.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import java.util.*;
 
+
+@ExtendWith(MockitoExtension.class)
 class CommentServiceTest {
 
     @Mock
@@ -68,7 +72,7 @@ class CommentServiceTest {
         ResponseEntity<CommentDto> response = commentService.createComment(principal, dto, campingRouteId);
 
         // Then
-        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(dto);
         verify(campingRouteRepository, times(1)).save(campingRouteEntity);
         verify(commentRepository, times(1)).save(commentEntity);
@@ -81,10 +85,6 @@ class CommentServiceTest {
         CommentDto dto = new CommentDto();
         dto.setContent("Great camping route!");
         long campingRouteId = 1L;
-
-        UserEntity userEntity = new UserEntity();
-        userEntity.setUsername(principal);
-        when(userRepository.findByUsername(principal)).thenReturn(Optional.of(userEntity));
 
         // Mock campingRouteRepository to return an empty Optional (route not found)
         when(campingRouteRepository.findById(campingRouteId)).thenReturn(Optional.empty());
@@ -111,7 +111,7 @@ class CommentServiceTest {
         ResponseEntity<List<CommentDto>> response = commentService.getCommentsByCampingRoute(campingRouteId);
 
         // Then
-        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).hasSize(1);
         verify(commentRepository, times(1)).findByCampingRoute(any(CampingRouteEntity.class));
     }
@@ -143,7 +143,7 @@ class CommentServiceTest {
         ResponseEntity<List<CommentDto>> response = commentService.getCommentsByUserId(userId);
 
         // Then
-        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).hasSize(1);
         verify(commentRepository, times(1)).findByUser_Id(userId);
     }
@@ -158,7 +158,7 @@ class CommentServiceTest {
         ResponseEntity<List<CommentDto>> response = commentService.getCommentsByUserId(userId);
 
         // Then
-        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEmpty();
     }
 }
