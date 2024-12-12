@@ -13,8 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
-
 
 @RestController
 @RequiredArgsConstructor
@@ -62,26 +60,4 @@ public class ViewsController {
         return service.getViewCountForCampingRoute(campingRouteId);
     }
 
-    @Operation(
-            summary = "Delete views from camping route",
-            description = "Delete camping route views by provided camping route ID from the system"
-    )
-    @ApiResponse(responseCode = "204", description = "Camping route views successfully deleted")
-    @ApiResponse(responseCode = "404", description = "Camping route with provided ID was not found",
-            content = @Content(
-                    schema = @Schema(implementation = ExceptionResponse.class),
-                    examples = @ExampleObject(value = "{\"message\": \"Camping route with id of 0 does not exist\"}")
-            ))
-    @ApiResponse(responseCode = "401", description = "User that tries to delete views is not permitted to do that",
-            content = @Content(
-                    schema = @Schema(implementation = ExceptionResponse.class),
-                    examples = @ExampleObject(value = "{\"message\": \"You are not permitted to delete this camping route views.\"}")
-            ))
-    @DeleteMapping("/camping_routes/views/{campingRouteId}")
-    public ResponseEntity<Void> deleteViewsFromCampingRoute(
-            @PathVariable long campingRouteId,
-            Principal principal
-    ) {
-        return service.deleteViewsFromCampingRoute(principal.getName(), campingRouteId);
-    }
 }

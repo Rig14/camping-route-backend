@@ -7,6 +7,4 @@ public interface ViewRepository extends JpaRepository<ViewEntity, Long> {
     // find all by camping route ID and get the count
     long countByCampingRoute_Id(long id);
 
-    // delete by camping route ID
-    void deleteByCampingRoute_Id(long id);
 }
