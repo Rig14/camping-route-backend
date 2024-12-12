@@ -1,4 +1,4 @@
-package ee.taltech.iti03022024backend;
+package ee.taltech.iti03022024backend.controller;
 
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;

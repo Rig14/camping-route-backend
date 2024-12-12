@@ -29,7 +29,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private UserService userService;
 
-    private final SecretKey jwtKey; // HS256
+    private final SecretKey jwtKey;
 
     private boolean isPasswordValid(String password) {
         // Password must be at least 8 characters long and contains:
@@ -50,7 +50,7 @@ public class UserService {
                 ))
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
-                .signWith(jwtKey, SignatureAlgorithm.HS256) // this will ensure that the SignatureAlgorithm is HS256
+                .signWith(jwtKey) // this will ensure that the SignatureAlgorithm is HS256
                 .compact();
     }
 
@@ -70,7 +70,7 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
         String token = generateToken(user);
         repository.save(user);
-        return ResponseEntity.ok(new VerificationDto(token, user.getId()));
+        return ResponseEntity.ok(new VerificationDto(token));
     }
 
     public ResponseEntity<VerificationDto> verifyUser(UserDto dto) {
@@ -85,7 +85,7 @@ public class UserService {
 
         log.info("Successful login for user: {}", dto.getUsername());
         String token = generateToken(user);
-        return ResponseEntity.ok(new VerificationDto(token, user.getId()));
+        return ResponseEntity.ok(new VerificationDto(token));
     }
 
     public ResponseEntity<UserDto> getUser(long id) {

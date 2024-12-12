@@ -14,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -73,7 +74,7 @@ class CampingRouteGpxServiceTest {
 
         ResponseEntity<Void> response = service.storeGpx(principal, multipartFile, routeId);
 
-        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
         Path filePath = tempDir.resolve("files").resolve("camping_route_gpx").resolve(routeId + ".gpx");
         assertTrue(Files.exists(filePath));
     }
@@ -116,7 +117,7 @@ class CampingRouteGpxServiceTest {
     }
 
     @Test
-    void givenNonGpxFile_whenStoreGpx_thenThrowCampingRouteGpxStorageException() throws IOException {
+    void givenNonGpxFile_whenStoreGpx_thenThrowCampingRouteGpxStorageException() {
         long routeId = 4L;
         String principal = "owner";
         CampingRouteEntity route = mockRouteEntity(principal, routeId);
@@ -130,6 +131,27 @@ class CampingRouteGpxServiceTest {
         });
     }
 
+        @Test
+    void givenIOException_whenStoreGpx_thenThrowCampingRouteGpxStorageException() throws IOException {
+        String principal = "validUser";
+        long campingRouteId = 1L;
+        CampingRouteEntity mockRoute = new CampingRouteEntity();
+        mockRoute.setUser(new UserEntity() {{
+            setUsername(principal);
+        }});
+        when(campingRouteRepository.findById(campingRouteId)).thenReturn(java.util.Optional.of(mockRoute));
+
+        when(multipartFile.isEmpty()).thenReturn(false);
+        when(multipartFile.getOriginalFilename()).thenReturn("route.gpx");
+        when(multipartFile.getInputStream()).thenThrow(new IOException("Simulated I/O error"));
+
+        assertThrows(CampingRouteGpxStorageException.class, () -> {
+            service.storeGpx(principal, multipartFile, campingRouteId);
+        });
+
+        verify(campingRouteRepository, times(1)).findById(campingRouteId);
+    }
+
     @Test
     void givenExistingGpxFile_whenGetGpx_thenResourceReturned() throws IOException {
         long routeId = 5L;
@@ -138,7 +160,7 @@ class CampingRouteGpxServiceTest {
 
         ResponseEntity<Resource> response = service.getGpx(routeId);
 
-        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
         Resource resource = response.getBody();
         assertNotNull(resource);
         assertTrue(resource.exists());
@@ -165,7 +187,7 @@ class CampingRouteGpxServiceTest {
 
         ResponseEntity<Void> response = service.deleteGpx(principal, routeId);
 
-        assertEquals(204, response.getStatusCodeValue());
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
         assertFalse(Files.exists(filePath));
     }
 

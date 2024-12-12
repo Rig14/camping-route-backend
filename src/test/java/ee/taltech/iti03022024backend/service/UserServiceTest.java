@@ -7,24 +7,28 @@ import ee.taltech.iti03022024backend.dto.VerificationDto;
 import ee.taltech.iti03022024backend.entity.UserEntity;
 import ee.taltech.iti03022024backend.exception.*;
 import ee.taltech.iti03022024backend.mapping.UserMapper;
+import ee.taltech.iti03022024backend.mapping.UserMapperImpl;
 import ee.taltech.iti03022024backend.repository.UserRepository;
 import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
+
+@ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 
-    @Mock
-    private UserMapper mapper;
+    @Spy
+    private UserMapper mapper = new UserMapperImpl();
 
     @Mock
     private UserRepository repository;
@@ -34,15 +38,15 @@ class UserServiceTest {
 
     private SecretKey jwtKey;
 
-    @InjectMocks
     private UserService userService;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        this.jwtKey = Keys.hmacShaKeyFor("your-256-bit-secret-your-256-bit-secret".getBytes(StandardCharsets.UTF_8));
-    }
+        byte[] keyBytes = "0123456789abcdef0123456789abcdef".getBytes(); // 32 bytes for HS256
+        jwtKey = Keys.hmacShaKeyFor(keyBytes);
 
+        userService = new UserService(mapper, repository, passwordEncoder, jwtKey);
+    }
 
     @Test
     void createUser_shouldThrowUsernameAlreadyExistsException_whenUsernameIsTaken() {
@@ -94,7 +98,6 @@ class UserServiceTest {
                 .hasMessageContaining("Password does not meet requirements.");
     }
 
-
     @Test
     void verifyUser_shouldThrowInvalidCredentialsException_whenCredentialsAreInvalid() {
         // Given
@@ -125,8 +128,51 @@ class UserServiceTest {
         ResponseEntity<UserDto> response = userService.getUser(userId);
 
         // Then
-        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
+    }
+
+    @Test
+    void verifyUser_shouldReturnToken_whenCredentialsAreValid() {
+        // Given
+        UserDto dto = new UserDto();
+        dto.setUsername("testUser");
+        dto.setPassword("Valid@123");
+
+        UserEntity user = new UserEntity();
+        user.setUsername(dto.getUsername());
+        user.setPassword("$2a$10$encodedPassword"); // Simulate encoded password
+
+        when(repository.findByUsername(dto.getUsername())).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches(dto.getPassword(), user.getPassword())).thenReturn(true);
+
+        // When
+        ResponseEntity<VerificationDto> response = userService.verifyUser(dto);
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getToken()).isNotEmpty();
+    }
+
+    @Test
+    void verifyUser_shouldThrowInvalidCredentialsException_whenPasswordIsIncorrect() {
+        // Given
+        UserDto dto = new UserDto();
+        dto.setUsername("testUser");
+        dto.setPassword("Invalid@123");
+
+        UserEntity user = new UserEntity();
+        user.setUsername(dto.getUsername());
+        user.setPassword("$2a$10$encodedPassword"); // Simulate encoded password
+
+        when(repository.findByUsername(dto.getUsername())).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches(dto.getPassword(), user.getPassword())).thenReturn(false);
+
+        // When & Then
+        assertThatThrownBy(() -> userService.verifyUser(dto))
+                .isInstanceOf(InvalidCredentialsException.class)
+                .hasMessageContaining("Invalid username or password");
     }
 
     @Test
@@ -156,7 +202,7 @@ class UserServiceTest {
         ResponseEntity<Void> response = userService.deleteUser(principal, userId);
 
         // Then
-        assertThat(response.getStatusCodeValue()).isEqualTo(204);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
         verify(repository, times(1)).deleteById(userId);
     }
 
@@ -175,5 +221,19 @@ class UserServiceTest {
         assertThatThrownBy(() -> userService.deleteUser(principal, userId))
                 .isInstanceOf(NotPermittedException.class)
                 .hasMessageContaining("You are not permitted to delete this user.");
+    }
+
+    @Test
+    void deleteUser_shouldThrowUserNotFoundException_whenPrincipalDoesNotExist() {
+        // Given
+        String principal = "nonExistentUser";
+        long userId = 1L;
+
+        when(repository.findByUsername(principal)).thenReturn(Optional.empty());
+
+        // When & Then
+        assertThatThrownBy(() -> userService.deleteUser(principal, userId))
+                .isInstanceOf(UserNotFoundException.class)
+                .hasMessageContaining("User not found with username: " + principal);
     }
 }
