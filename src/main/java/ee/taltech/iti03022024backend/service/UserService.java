@@ -26,7 +26,7 @@ public class UserService {
     private final UserMapper mapper;
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
-    private UserService userService;
+    private UserService mockUserService;
 
     private final SecretKey jwtKey; // HS256
 
