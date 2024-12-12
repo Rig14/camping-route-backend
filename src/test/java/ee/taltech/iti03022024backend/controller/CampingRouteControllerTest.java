@@ -3,6 +3,7 @@ package ee.taltech.iti03022024backend.controller;
 import ee.taltech.iti03022024backend.AbstractIntegrationTest;
 import ee.taltech.iti03022024backend.dto.CampingRouteDto;
 import ee.taltech.iti03022024backend.dto.CampingRouteSearchRequest;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -43,6 +44,7 @@ class CampingRouteControllerTest extends AbstractIntegrationTest {
     private ObjectMapper objectMapper;
 
     @Test
+    @Transactional
     void givenCampingRouteDto_whenCreateCampingRouteAndUserLoggedIn_thenReturnsOkAndCorrectData() throws Exception {
         CampingRouteDto campingRouteDto = new CampingRouteDto();
         campingRouteDto.setName("TestTestTest");
@@ -64,6 +66,7 @@ class CampingRouteControllerTest extends AbstractIntegrationTest {
     }
 
     @ParameterizedTest
+    @Transactional
     @MethodSource("provideTestParameters")
     void givenCampingRouteSearchRequest_whenDifferentActions_thenReturnsOkAndCorrectData(String url, String keyword, int pageNumber, int pageSize, int expectedTotalElements, int expectedTotalPages) throws Exception {
         CampingRouteSearchRequest searchRequest = new CampingRouteSearchRequest();
@@ -84,6 +87,7 @@ class CampingRouteControllerTest extends AbstractIntegrationTest {
     }
 
     @Test
+    @Transactional
     void givenExistingCampingRoute_whenGetCampingRoute_thenReturnsOkAndCorrectData() throws Exception {
         mvc.perform(get("/api/public/camping_routes/{id}", 1L))
                 .andExpect(status().isOk())
@@ -95,6 +99,7 @@ class CampingRouteControllerTest extends AbstractIntegrationTest {
     }
 
     @Test
+    @Transactional
     void givenCampingRouteId_whenDeleteCampingRouteAndUserLoggedIn_thenReturnsNoContent() throws Exception {
         mvc.perform(delete("/api/camping_routes/{id}", 2L).with(user("user2")))
                 .andExpect(status().isNoContent());

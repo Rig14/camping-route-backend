@@ -4,14 +4,15 @@ import ee.taltech.iti03022024backend.AbstractIntegrationTest;
 import ee.taltech.iti03022024backend.dto.UserDto;
 import ee.taltech.iti03022024backend.dto.VerificationDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -26,6 +27,7 @@ class UserControllerTest extends AbstractIntegrationTest {
     private ObjectMapper objectMapper;
 
     @Test
+    @Transactional
     void givenValidUserDto_whenCreateUser_thenReturnsOkAndVerificationDto() throws Exception {
         UserDto userDto = new UserDto();
         userDto.setUsername("newuser");
@@ -42,6 +44,7 @@ class UserControllerTest extends AbstractIntegrationTest {
     }
 
     @Test
+    @Transactional
     void givenExistingUsername_whenCreateUser_thenReturnsConflict() throws Exception {
         UserDto userDto = new UserDto();
         userDto.setUsername("existinguser");
@@ -61,6 +64,7 @@ class UserControllerTest extends AbstractIntegrationTest {
     }
 
     @Test
+    @Transactional
     void givenValidCredentials_whenVerifyUser_thenReturnsOkAndVerificationDto() throws Exception {
         UserDto createDto = new UserDto();
         createDto.setUsername("verifyuser");
@@ -86,6 +90,7 @@ class UserControllerTest extends AbstractIntegrationTest {
     }
 
     @Test
+    @Transactional
     void givenExistingUserId_whenGetUser_thenReturnsOkAndUserDto() throws Exception {
         UserDto createDto = new UserDto();
         createDto.setUsername("getuser");
@@ -110,26 +115,17 @@ class UserControllerTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "deleteuser")
+    @Transactional
     void givenValidUser_whenDeleteUser_thenReturnsNoContent() throws Exception {
         UserDto createDto = new UserDto();
-        createDto.setUsername("deleteuser");
-        createDto.setEmail("deleteuser@example.com");
-        createDto.setPassword("StrongPass123!");
+        createDto.setUsername("user2");
+        createDto.setEmail("user.two@gmail.com");
+        createDto.setPassword("UserPassword2!");
 
-        String createResponse = mvc.perform(post("/api/public/user")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(createDto)))
-                .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
-
-        VerificationDto verificationDto = objectMapper.readValue(createResponse, VerificationDto.class);
-        long userId = verificationDto.getUserId();
-
-        mvc.perform(delete("/api/user/{id}", userId))
+        mvc.perform(delete("/api/user/{id}", 2).with(user("user2")))
                 .andExpect(status().isNoContent());
 
-        mvc.perform(get("/api/public/user/{id}", userId))
+        mvc.perform(get("/api/public/user/{id}", 2))
                 .andExpect(status().isNotFound());
     }
 }

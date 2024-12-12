@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.taltech.iti03022024backend.AbstractIntegrationTest;
 import ee.taltech.iti03022024backend.dto.CommentDto;
 import org.junit.jupiter.api.Test;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,6 +27,7 @@ class CommentControllerTest extends AbstractIntegrationTest {
     private ObjectMapper objectMapper;
 
     @Test
+    @Transactional
     void givenValidData_whenCreateComment_thenReturnsOk() throws Exception {
         CommentDto commentDto = new CommentDto();
         commentDto.setContent("Great camping route!");
@@ -41,6 +43,7 @@ class CommentControllerTest extends AbstractIntegrationTest {
     }
 
     @Test
+    @Transactional
     void givenCampingRouteId_whenGetCommentsByCampingRoute_thenReturnsOk() throws Exception {
         mvc.perform(get("/api/public/camping_routes/comments/{campingRouteId}", 2L))
                 .andExpect(status().isOk())
@@ -50,6 +53,7 @@ class CommentControllerTest extends AbstractIntegrationTest {
     }
 
     @Test
+    @Transactional
     void givenUserId_whenGetCommentsByUserId_thenReturnsOk() throws Exception {
         mvc.perform(get("/api/public/camping_routes/comments/user/{userId}", 1L))
                 .andExpect(status().isOk())
@@ -59,6 +63,7 @@ class CommentControllerTest extends AbstractIntegrationTest {
     }
 
     @Test
+    @Transactional
     void givenCommentId_whenDeleteComment_thenReturnsNoContent() throws Exception {
         mvc.perform(delete("/api/camping_routes/comments/single/{commentId}", 1L)
                         .with(user("user1")))

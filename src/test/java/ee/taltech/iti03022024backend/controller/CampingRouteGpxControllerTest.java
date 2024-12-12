@@ -1,6 +1,7 @@
 package ee.taltech.iti03022024backend.controller;
 
 import ee.taltech.iti03022024backend.AbstractIntegrationTest;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -25,6 +26,7 @@ class CampingRouteGpxControllerTest extends AbstractIntegrationTest {
     private MockMvc mvc;
 
     @Test
+    @Transactional
     void givenGpxFileAndCampingRouteId_whenAddGpxFileToCampingRoute_thenReturnsOK() throws Exception {
         File originalFile = new File("src/test/resources/anija.gpx");
         MockMultipartFile upload = new MockMultipartFile("file", "anija.gpx",
@@ -38,6 +40,7 @@ class CampingRouteGpxControllerTest extends AbstractIntegrationTest {
     }
 
     @Test
+    @Transactional
     void givenCampingRouteId_whenGetGpx_thenReturnOkAndGpxFile() throws Exception {
         givenGpxFileAndCampingRouteId_whenAddGpxFileToCampingRoute_thenReturnsOK();
         mvc.perform(get("/api/public/camping_routes/gpx/{id}", 1L))
@@ -46,6 +49,7 @@ class CampingRouteGpxControllerTest extends AbstractIntegrationTest {
     }
 
     @Test
+    @Transactional
     void givenCampingRouteId_whenDeleteGpx_thenReturnsNoContent() throws Exception {
         givenGpxFileAndCampingRouteId_whenAddGpxFileToCampingRoute_thenReturnsOK();
         mvc.perform(delete("/api/camping_routes/gpx/{id}", 1L)

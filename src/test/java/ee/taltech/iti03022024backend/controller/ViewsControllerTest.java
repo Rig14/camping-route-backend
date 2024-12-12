@@ -2,6 +2,7 @@ package ee.taltech.iti03022024backend.controller;
 
 import ee.taltech.iti03022024backend.AbstractIntegrationTest;
 import ee.taltech.iti03022024backend.repository.ViewRepository;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,7 @@ class ViewsControllerTest extends AbstractIntegrationTest {
     }
 
     @Test
+    @Transactional
     void givenValidCampingRouteId_whenAddView_thenReturnsOk() throws Exception {
         mvc.perform(post("/api/public/camping_routes/views/{campingRouteId}", 2L)
                 .contentType(MediaType.APPLICATION_JSON))
@@ -39,6 +41,7 @@ class ViewsControllerTest extends AbstractIntegrationTest {
     }
 
     @Test
+    @Transactional
     void givenValidCampingRouteId_whenGetViewCount_thenReturnsOk() throws Exception {
         mvc.perform(get("/api/public/camping_routes/views/{campingRouteId}", 2L))
                 .andExpect(status().isOk())
@@ -48,6 +51,7 @@ class ViewsControllerTest extends AbstractIntegrationTest {
     }
 
     @Test
+    @Transactional
     void givenExistingCampingRoute_whenMultipleViewsAdded_thenViewCountIncreases() throws Exception {
         long campingRouteId = 2L;
 
