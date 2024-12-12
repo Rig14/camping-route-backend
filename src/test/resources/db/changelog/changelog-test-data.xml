@@ -41,4 +41,12 @@
         </insert>
     </changeSet>
 
+    <changeSet id="mock-data-comment" author="dev">
+        <insert tableName="comment">
+            <column name="content" value="Test Comment"/>
+            <column name="user_data_id" value="1"/>
+            <column name="camping_route_id" value="2"/>
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>
