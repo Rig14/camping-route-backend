@@ -1,22 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="
-       http://www.liquibase.org/xml/ns/dbchangelog
-       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
 
-    <!-- Include your main changelog file -->
     <include file="/db/changelog/changelog-master.xml"/>
 
     <changeSet id="mock-data-user" author="dev">
-        <insert tableName="user_entity">
+        <insert tableName="user_data">
             <column name="id" valueNumeric="1"/>
             <column name="username" value="user"/>
         </insert>
     </changeSet>
 
     <changeSet id="mock-data-route" author="dev">
-        <insert tableName="camping_route_entity">
+        <insert tableName="camping_route">
             <column name="id" valueNumeric="1"/>
             <column name="user_id" valueNumeric="1"/>
             <column name="name" value="Test Route"/>

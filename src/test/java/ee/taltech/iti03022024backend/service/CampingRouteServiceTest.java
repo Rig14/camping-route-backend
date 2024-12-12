@@ -11,7 +11,6 @@ import ee.taltech.iti03022024backend.entity.CampingRouteEntity;
 import ee.taltech.iti03022024backend.entity.UserEntity;
 import ee.taltech.iti03022024backend.exception.CampingRouteNotFoundException;
 import ee.taltech.iti03022024backend.exception.NotPermittedException;
-import ee.taltech.iti03022024backend.exception.UserNotFoundException;
 import ee.taltech.iti03022024backend.mapping.CampingRouteMapper;
 import ee.taltech.iti03022024backend.repository.CampingRouteRepository;
 import ee.taltech.iti03022024backend.repository.UserRepository;
@@ -64,7 +63,7 @@ class CampingRouteServiceTest {
         ResponseEntity<CampingRouteDto> response = campingRouteService.createCampingRoute(principal, dto);
 
         // then
-        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+        assertThat(response.getStatusCode().value()).isEqualTo(200);
         assertThat(response.getBody()).isEqualTo(dto);
         verify(routeRepository, times(1)).save(any(CampingRouteEntity.class));
     }
@@ -84,7 +83,7 @@ class CampingRouteServiceTest {
         ResponseEntity<List<CampingRouteDto>> response = campingRouteService.getCampingRoutesByUserId(userId);
 
         // then
-        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+        assertThat(response.getStatusCode().value()).isEqualTo(200);
         assertThat(response.getBody()).hasSize(1);
         verify(routeRepository, times(1)).findByUser_Id(userId);
     }
@@ -103,7 +102,7 @@ class CampingRouteServiceTest {
         ResponseEntity<CampingRouteDto> response = campingRouteService.getCampingRoute(routeId);
 
         // then
-        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+        assertThat(response.getStatusCode().value()).isEqualTo(200);
         assertThat(response.getBody()).isEqualTo(routeDto);
     }
 
@@ -137,7 +136,7 @@ class CampingRouteServiceTest {
         ResponseEntity<Void> response = campingRouteService.deleteCampingRoute(principal, routeId);
 
         // then
-        assertThat(response.getStatusCodeValue()).isEqualTo(204);
+        assertThat(response.getStatusCode().value()).isEqualTo(204);
         verify(routeRepository, times(1)).deleteById(routeId);
     }
 
@@ -176,7 +175,7 @@ class CampingRouteServiceTest {
         ResponseEntity<PageResponse<CampingRouteDto>> response = campingRouteService.getCampingRoutesForHomepage(searchRequest);
 
         // then
-        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+        assertThat(response.getStatusCode().value()).isEqualTo(200);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getTotalElements()).isEqualTo(1);
     }
@@ -198,7 +197,7 @@ class CampingRouteServiceTest {
         ResponseEntity<PageResponse<CampingRouteDto>> response = campingRouteService.findCampingRoute(searchRequest);
 
         // then
-        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+        assertThat(response.getStatusCode().value()).isEqualTo(200);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getTotalElements()).isEqualTo(1);
     }
