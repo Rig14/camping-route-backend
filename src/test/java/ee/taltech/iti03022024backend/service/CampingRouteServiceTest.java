@@ -70,22 +70,38 @@ class CampingRouteServiceTest {
 
     @Test
     void getCampingRoutesByUserId_shouldReturnListOfRoutes() {
-        // given
-        long userId = 1L;
-        List<CampingRouteEntity> routes = new ArrayList<>();
-        CampingRouteEntity route = new CampingRouteEntity();
-        routes.add(route);
+        UserEntity user = new UserEntity();
+        user.setId(1L);
 
-        when(routeRepository.findByUser_Id(userId)).thenReturn(routes);
-        when(mapper.toDtoList(routes)).thenReturn(Collections.singletonList(new CampingRouteDto()));
+        CampingRouteSearchRequest searchRequest = new CampingRouteSearchRequest();
+        searchRequest.setKeyword(String.valueOf(user.getId()));
+        searchRequest.setPageNumber(0);
+        searchRequest.setPageSize(10);
 
-        // when
-        ResponseEntity<List<CampingRouteDto>> response = campingRouteService.getCampingRoutesByUserId(userId);
+        CampingRouteEntity routeEntity1 = new CampingRouteEntity();
+        routeEntity1.setId(1L);
+        routeEntity1.setUser(user);
 
-        // then
+        CampingRouteEntity routeEntity2 = new CampingRouteEntity();
+        routeEntity2.setId(2L);
+        routeEntity2.setUser(user);
+
+        Page<CampingRouteEntity> page = new PageImpl<>(List.of(routeEntity1, routeEntity2),
+                PageRequest.of(0, 10), 2);
+
+        when(routeRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(page);
+        when(mapper.toDtoList(anyList())).thenReturn(Collections.singletonList(new CampingRouteDto()));
+
+        ResponseEntity<PageResponse<CampingRouteDto>> response = campingRouteService.getCampingRoutesByUserId(searchRequest);
+
         assertThat(response.getStatusCode().value()).isEqualTo(200);
-        assertThat(response.getBody()).hasSize(1);
-        verify(routeRepository, times(1)).findByUser_Id(userId);
+        PageResponse<CampingRouteDto> pageResponse = response.getBody();
+        assertThat(pageResponse).isNotNull();
+        assertThat(pageResponse.getContent()).hasSize(2);
+        assertThat(pageResponse.getTotalPages()).isEqualTo(1);
+        assertThat(pageResponse.getTotalElements()).isEqualTo(2);
+        verify(routeRepository).findAll(any(Specification.class), any(Pageable.class));
+        verify(mapper, times(2)).toDto(any(CampingRouteEntity.class));
     }
 
     @Test
