@@ -70,6 +70,7 @@ Graph that visualizes our current monitoring setup:
 
 ![image](https://github.com/user-attachments/assets/6f8f8ab1-c403-4e83-8c45-aebe2e0e23f3)
 
+![image](https://github.com/user-attachments/assets/c684b788-6683-450a-8917-08a8829a8e8d)
 
 
 ## Used Technologies
