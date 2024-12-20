@@ -58,6 +58,17 @@ After that the `docker compose pull && docker compose up` can be used to run doc
 
 > NB! In `compose.yaml` under ***services/spring/image:*** the image name should be changed to your tag.
 
+## monitoring (setup used for taltech server)
+
+We currently have 2 places of interest for monitoring. TalTech server and the Spring Boot application. From the TalTech server we are interested in server load, storage use, memory use and other hardware metrics. From Application point of view we are interested in logs that are produced when the application is running. 
+
+To accomplish this we are using Prometheus and node exporter for server metrics and Loki for application logs. Both are visualized with the help of Grafana platform. 
+
+Graph that visualizes our current monitoring setup:
+
+![image](https://github.com/user-attachments/assets/603e3053-73b3-47f5-b678-e263b782cf5d)
+
+
 ## Used Technologies
 
 - Java ☕ 23
@@ -75,6 +86,6 @@ After that the `docker compose pull && docker compose up` can be used to run doc
 - Grafana 📈
     - Loki 🪵
     - Prometheus 📊
-        - Node exporter 
+        - Node exporter
 
 
